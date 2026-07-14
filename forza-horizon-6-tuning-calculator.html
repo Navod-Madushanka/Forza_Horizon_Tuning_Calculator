@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>FH6 Setup Sheet — Tuning Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1014;
+    --bg-raise: #14171D;
+    --surface: #181B21;
+    --surface-2: #1F232B;
+    --border: #2A2F38;
+    --border-soft: #232730;
+    --text: #ECEEF1;
+    --text-muted: #8B919C;
+    --text-faint: #595F6B;
+    --accent: #FF5630;
+    --accent-soft: rgba(255,86,48,0.14);
+    --front: #36D6C8;
+    --front-soft: rgba(54,214,200,0.12);
+    --rear: #F2A93C;
+    --rear-soft: rgba(242,169,60,0.12);
+    --good: #36C26B;
+    --warn: #E0473D;
+    --class-color: #B5B9C0;
+    --class-color-soft: rgba(181,185,192,0.14);
+    --radius: 7px;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+    --display: 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
+    --body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 0%, rgba(255,86,48,0.06), transparent 45%),
+      radial-gradient(circle at 90% 8%, rgba(54,214,200,0.05), transparent 40%);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{ font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; margin: 0; }
+  button{ font-family: inherit; }
+  ::selection{ background: var(--accent-soft); }
+
+  .app{ max-width: 1180px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 16px;
+  }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand-mark{
+    font-family: var(--mono); font-weight:700; font-size:13px; letter-spacing: 0.08em;
+    color: var(--bg); background: var(--accent); padding: 4px 7px; border-radius: 4px;
+  }
+  .brand h1{ font-size: 22px; }
+  .brand .sub{ color: var(--text-muted); font-size: 12.5px; margin-top: 2px; }
+
+  .info-toggle{
+    background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+    font-size: 12.5px; padding: 8px 12px; border-radius: var(--radius); cursor:pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .info-toggle:hover{ border-color: var(--accent); color: var(--text); }
+
+  .info-panel{
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 16px; font-size: 13.2px; color: var(--text-muted);
+  }
+  .info-panel strong{ color: var(--text); }
+
+  /* ---------- Tabs ---------- */
+  .tabs{ display:flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
+  .tab{
+    background: transparent; border: none; color: var(--text-muted);
+    font-family: var(--display); font-weight: 600; font-size: 14.5px; letter-spacing: 0.02em;
+    padding: 10px 4px; margin-right: 22px; cursor: pointer;
+    border-bottom: 2px solid transparent; transform: translateY(1px);
+    transition: color .15s, border-color .15s;
+  }
+  .tab:hover{ color: var(--text); }
+  .tab.active{ color: var(--text); border-bottom-color: var(--accent); }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; animation: fadeIn .18s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(2px); } to{ opacity:1; transform:none; } }
+
+  /* ---------- Layout ---------- */
+  .layout{ display:grid; grid-template-columns: 330px 1fr; gap: 22px; align-items:start; }
+  @media (max-width: 880px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--surface); border: 1px solid var(--border-soft);
+    border-radius: var(--radius); padding: 18px;
+  }
+  .panel h2{ font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
+
+  /* ---------- Form ---------- */
+  .field{ margin-bottom: 13px; }
+  .field label{
+    display:block; font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;
+  }
+  .field-hint{ font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  input[type=number], input[type=text], select{
+    width:100%; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); padding: 9px 10px; border-radius: 6px; font-size: 13.5px;
+    font-family: var(--body); outline: none; transition: border-color .15s;
+  }
+  input[type=number]:focus, input[type=text]:focus, select:focus{ border-color: var(--front); }
+  select{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%); background-position: calc(100% - 16px) center, calc(100% - 11px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+
+  .unit-toggle{ display:flex; border: 1px solid var(--border); border-radius: 6px; overflow:hidden; }
+  .unit-toggle button{
+    flex:1; background: var(--surface-2); border:none; color: var(--text-muted); padding: 9px 0; cursor:pointer; font-size: 12.5px;
+  }
+  .unit-toggle button.active{ background: var(--accent); color: var(--bg); font-weight:600; }
+
+  .checkbox-field{ display:flex; align-items:center; gap:8px; font-size: 12.8px; color: var(--text-muted); margin-bottom: 13px; }
+  .checkbox-field input{ width:15px; height:15px; accent-color: var(--accent); }
+
+  .btn-primary{
+    width:100%; background: var(--accent); color: #fff; border:none; padding: 11px 0;
+    border-radius: 6px; font-family: var(--display); font-weight:700; font-size: 14.5px; letter-spacing: 0.03em;
+    cursor:pointer; margin-top: 6px; transition: filter .15s, transform .1s;
+  }
+  .btn-primary:hover{ filter: brightness(1.08); }
+  .btn-primary:active{ transform: scale(.99); }
+
+  fieldset{ border:none; padding:0; margin:0 0 16px; }
+  fieldset legend{ font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px; padding:0; font-weight:500; }
+
+  /* ---------- Results / class stripe ---------- */
+  .class-stripe{
+    display:flex; align-items:center; gap: 14px; padding: 13px 16px; border-radius: var(--radius);
+    background: var(--class-color-soft); border: 1px solid var(--class-color);
+    margin-bottom: 16px; transition: background .2s, border-color .2s;
+  }
+  .class-badge{
+    font-family: var(--mono); font-weight:700; font-size: 19px; color: var(--bg);
+    background: var(--class-color); width: 38px; height:38px; border-radius:6px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; transition: background .2s;
+  }
+  .class-stripe .ctext{ font-size: 12.8px; color: var(--text-muted); }
+  .class-stripe .ctext b{ color: var(--text); font-family: var(--display); font-size: 14px; }
+  .mech-balance{ margin-left:auto; text-align:right; font-size: 11px; color: var(--text-muted); }
+  .mech-balance .val{ font-family: var(--mono); font-size: 15px; color: var(--text); display:block; }
+
+  .cards-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 14px; }
+
+  .card{
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 15px 16px;
+  }
+  .card h3{ font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px; display:flex; align-items:center; gap:8px;}
+  .card h3 .dot{ width:6px; height:6px; border-radius:50%; background: var(--accent); flex-shrink:0; }
+
+  .fr-row{ display:flex; gap: 10px; margin-bottom: 4px; }
+  .fr-chip{ flex:1; border-radius: 6px; padding: 8px 10px; background: var(--surface-2); }
+  .fr-chip.front{ border-left: 3px solid var(--front); }
+  .fr-chip.rear{ border-left: 3px solid var(--rear); }
+  .fr-chip .lbl{ font-size: 10.5px; color: var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; }
+  .fr-chip .val{ font-family: var(--mono); font-size: 17px; font-weight:600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .fr-chip.front .val{ color: var(--front); }
+  .fr-chip.rear .val{ color: var(--rear); }
+  .fr-chip .unit{ font-size: 11px; color: var(--text-muted); font-weight:400; margin-left:3px; }
+
+  .single-val{ display:flex; align-items:baseline; gap:8px; margin-bottom: 4px;}
+  .single-val .val{ font-family: var(--mono); font-size: 20px; font-weight:600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .single-val .unit{ font-size: 12px; color: var(--text-muted); }
+
+  .why{ font-size: 11.8px; color: var(--text-muted); margin-top: 10px; line-height:1.5; }
+  .callout{
+    margin-top: 10px; padding: 8px 10px; background: rgba(224,71,61,0.1); border: 1px solid rgba(224,71,61,0.35);
+    border-radius: 6px; font-size: 11.8px; color: #F3A39D;
+  }
+  .na-note{ color: var(--text-faint); font-size: 12.5px; font-style: italic; }
+
+  .ladder{ display:flex; flex-wrap:wrap; gap: 6px; margin-top:2px; }
+  .ladder span{
+    font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); border:1px solid var(--border);
+    padding: 4px 8px; border-radius: 4px; color: var(--text);
+  }
+  .ladder span:first-child{ border-color: var(--front); color: var(--front); }
+  .ladder span:last-child{ border-color: var(--rear); color: var(--rear); }
+
+  /* ---------- Meta advisor ---------- */
+  .step-list{ display:flex; flex-direction:column; gap: 10px; }
+  .step{
+    display:flex; gap: 12px; background: var(--surface); border:1px solid var(--border-soft);
+    border-radius: var(--radius); padding: 13px 15px; align-items:flex-start;
+  }
+  .step .num{
+    font-family: var(--mono); font-size: 12px; color: var(--text-faint); flex-shrink:0; width:20px; padding-top:1px;
+  }
+  .step .pill{
+    flex-shrink:0; font-size: 10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    padding: 3px 7px; border-radius: 4px; margin-right: 4px;
+  }
+  .step.included .pill{ background: rgba(54,194,107,0.15); color: var(--good); }
+  .step.skip .pill{ background: var(--surface-2); color: var(--text-faint); }
+  .step.flagged{ border-color: rgba(224,71,61,0.4); background: rgba(224,71,61,0.05); }
+  .step .body{ flex:1; }
+  .step .body h4{ font-family: var(--display); font-size: 14.5px; margin: 0 0 4px; font-weight:600; }
+  .step .body p{ margin:0; font-size: 12.8px; color: var(--text-muted); line-height:1.5; }
+
+  .meta-table-wrap{ margin-top: 22px; }
+  .meta-table-wrap h2{ font-size: 14px; color: var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+  table.meta-table{ width:100%; border-collapse: collapse; font-size: 12.6px; }
+  table.meta-table th, table.meta-table td{ text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--border-soft); }
+  table.meta-table th{ color: var(--text-muted); font-weight:600; font-size: 11px; text-transform:uppercase; letter-spacing:0.04em; }
+  table.meta-table td{ color: var(--text); }
+  table.meta-table tr:hover td{ background: var(--surface); }
+
+  footer{ margin-top: 34px; border-top: 1px solid var(--border-soft); padding-top: 14px; }
+  footer p{ font-size: 11.5px; color: var(--text-faint); margin:0; }
+
+  @media (max-width: 480px){
+    .row2, .row3{ grid-template-columns: 1fr; }
+    .brand h1{ font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark">FH6</span>
+      <div>
+        <h1>Setup Sheet</h1>
+        <div class="sub">Road &amp; circuit tuning calculator — Japan, tarmac only</div>
+      </div>
+    </div>
+    <button class="info-toggle" id="infoToggle">What do these formulas assume?</button>
+  </div>
+
+  <div class="info-panel" id="infoPanel" hidden>
+    <strong>Turn 10 / Playground Games have never published the game's internal physics formulas.</strong>
+    This version's formulas come from a personal road/touge tuning guide: springs are a % of the
+    slider's (Max−Min) range scaled by corner weight (front softer, rear stiffer, for sharp turn-in
+    on tight street corners and mountain passes), ARBs target a deliberately soft front (5–8) and
+    stiff rear (40–50), damping uses Rebound at 60–70% of the max slider with Bump at 35–40% of
+    that Rebound value, and AWD differential locks Rear Accel at 100% with a strong rear Center
+    Bias. Front toe is set toe-OUT on purpose — that's what gives the instant turn-in this layout
+    is built for. Treat every number as a confident starting point, then trim from in-game telemetry
+    and feel. The low-pressure tire "meta" (~16 psi) is a deliberate contact-patch exploit, not a
+    feel-first recommendation — it's flagged as such when enabled. Covers tarmac road and circuit
+    racing only — no drift, drag, dirt, or cross-country logic.
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="calc">Tuning Calculator</button>
+    <button class="tab" data-tab="meta">Class Meta Advisor</button>
+  </nav>
+
+  <main>
+    <!-- ===================== CALCULATOR TAB ===================== -->
+    <section class="tab-panel active" id="calc-tab">
+      <div class="layout">
+
+        <form class="panel form-panel" id="calcForm">
+          <h2>Car &amp; setup inputs</h2>
+
+          <div class="field">
+            <label for="weight">Car weight</label>
+            <div class="row2">
+              <input type="number" id="weight" value="3400" min="1000" max="6000" required>
+              <div class="unit-toggle" id="unitToggle">
+                <button type="button" class="active" data-unit="lb">lb</button>
+                <button type="button" data-unit="kg">kg</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="enginePos">Engine position</label>
+            <select id="enginePos">
+              <option value="Front" selected>Front-engine</option>
+              <option value="Mid">Mid-engine</option>
+              <option value="Rear">Rear-engine</option>
+            </select>
+            <div class="field-hint">Used to auto-fill weight distribution and trail-braking bias.</div>
+          </div>
+
+          <div class="field">
+            <label for="frontWeight">Weight distribution, % front <span style="color:var(--text-faint)">(optional override)</span></label>
+            <input type="number" id="frontWeight" placeholder="auto from engine position" min="30" max="70" step="0.5">
+          </div>
+
+          <div class="field">
+            <label for="drivetrain">Drivetrain</label>
+            <select id="drivetrain">
+              <option value="FWD">FWD</option>
+              <option value="RWD" selected>RWD</option>
+              <option value="AWD">AWD</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="compound">Tire compound</label>
+            <select id="compound">
+              <option value="Stock">Stock</option>
+              <option value="Street">Street</option>
+              <option value="Sport" selected>Sport</option>
+              <option value="Semi-slick">Semi-slick</option>
+              <option value="Race">Race slick</option>
+              <option value="Rally">Rally</option>
+            </select>
+          </div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="useMetaPressure">
+            Use low-pressure contact-patch meta (~16 psi / 1.1 BAR) instead of standard pressures
+          </label>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="nightCold">
+            Cool / nighttime street race — drop cold pressure -1.5 PSI
+          </label>
+
+          <div class="field">
+            <label for="piClass">PI class</label>
+            <select id="piClass">
+              <option value="D">D — ≤500</option>
+              <option value="C">C — 501–600</option>
+              <option value="B" selected>B — 601–700</option>
+              <option value="A">A — 701–800</option>
+              <option value="S1">S1 — 801–900</option>
+              <option value="S2">S2 — 901–998</option>
+              <option value="R">R — 999+</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="brakingStyle">Braking style</label>
+            <select id="brakingStyle">
+              <option value="Stability-first" selected>Stability-first</option>
+              <option value="Trail-braking">Trail-braking</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="balance">Cornering balance preference</label>
+            <select id="balance">
+              <option value="Neutral" selected>Neutral</option>
+              <option value="Safer">Safer (understeer-biased)</option>
+              <option value="Aggressive">Aggressive (oversteer-biased)</option>
+            </select>
+          </div>
+
+          <fieldset>
+            <legend>ARB slider range, as shown in-game (optional)</legend>
+            <div class="row2">
+              <input type="number" id="arbMin" placeholder="Min">
+              <input type="number" id="arbMax" placeholder="Max">
+            </div>
+            <div class="field-hint">Leave blank for a normalized 0–65 raw output you can rescale.</div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Spring rate slider range, as shown in-game (optional)</legend>
+            <div class="row2">
+              <input type="number" id="springMin" placeholder="Min (e.g. 80)">
+              <input type="number" id="springMax" placeholder="Max (e.g. 1100)">
+            </div>
+            <div class="field-hint">This is what was making setups too stiff before — enter your car's actual slider range for an accurate result.</div>
+          </fieldset>
+
+          <div class="row2">
+            <div class="field">
+              <label for="topSpeed">Top speed target (mph)</label>
+              <input type="number" id="topSpeed" placeholder="auto by class">
+            </div>
+            <div class="field">
+              <label for="numGears">Gears</label>
+              <input type="number" id="numGears" value="6" min="4" max="9">
+            </div>
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label for="peakRPM">Peak power RPM <span style="color:var(--text-faint)">(optional)</span></label>
+              <input type="number" id="peakRPM" placeholder="e.g. 6500" min="1000" max="13000">
+            </div>
+            <div class="field">
+              <label for="redlineRPM">Redline RPM <span style="color:var(--text-faint)">(optional)</span></label>
+              <input type="number" id="redlineRPM" placeholder="e.g. 7500" min="1000" max="13000">
+            </div>
+          </div>
+          <div class="field-hint" style="margin-top:-8px; margin-bottom:13px">Leave both blank for the standard even-percentage curve. Fill both in if you know your engine's power/torque graph — a narrow powerband (peak close to redline) will tighten the top-gear spacing slightly.</div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="brakesUpgraded">
+            Brakes already upgraded at least one tier
+          </label>
+
+          <button type="submit" class="btn-primary">Calculate setup</button>
+        </form>
+
+        <div class="results">
+          <div class="class-stripe" id="classStripe">
+            <div class="class-badge" id="classBadge">B</div>
+            <div class="ctext">PI class <b id="classLabel">B — 601–700</b><br>Tarmac road &amp; circuit setup</div>
+          </div>
+          <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== META ADVISOR TAB ===================== -->
+    <section class="tab-panel" id="meta-tab">
+      <div class="layout">
+
+        <form class="panel form-panel" id="metaForm">
+          <h2>Upgrade plan</h2>
+
+          <div class="field">
+            <label for="currentClass">Current class</label>
+            <select id="currentClass">
+              <option value="D" selected>D — ≤500</option>
+              <option value="C">C — 501–600</option>
+              <option value="B">B — 601–700</option>
+              <option value="A">A — 701–800</option>
+              <option value="S1">S1 — 801–900</option>
+              <option value="S2">S2 — 901–998</option>
+              <option value="R">R — 999+</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="targetClass">Target class</label>
+            <select id="targetClass">
+              <option value="D">D — ≤500</option>
+              <option value="C" selected>C — 501–600</option>
+              <option value="B">B — 601–700</option>
+              <option value="A">A — 701–800</option>
+              <option value="S1">S1 — 801–900</option>
+              <option value="S2">S2 — 901–998</option>
+              <option value="R">R — 999+</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="currentDrivetrain">Current drivetrain <span style="color:var(--text-faint)">(optional)</span></label>
+            <select id="currentDrivetrain">
+              <option value="">Unknown / skip drivetrain advice</option>
+              <option value="FWD">FWD</option>
+              <option value="RWD">RWD</option>
+              <option value="AWD">AWD</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-primary">Get upgrade priority</button>
+        </form>
+
+        <div class="results">
+          <div class="step-list" id="stepList"></div>
+
+          <div class="meta-table-wrap">
+            <h2>Class meta reference</h2>
+            <table class="meta-table">
+              <thead><tr><th>Class</th><th>PI range</th><th>Tire meta</th><th>Drivetrain meta</th><th>Focus</th></tr></thead>
+              <tbody id="metaTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Road/touge formulas sourced from a personal Forza Horizon 6 tuning guide. Turn 10 / Playground Games have never published official physics formulas for Forza Horizon 6 — use these as a confident starting point, then fine-tune from in-game telemetry.</p>
+  </footer>
+</div>
+
+<script>
+/* =========================================================================
+   ENGINE — pure calculation functions, one per subsystem
+   ========================================================================= */
+const CLASSES = ["D","C","B","A","S1","S2","R"];
+const CLASS_LABELS = { D:"D — ≤500", C:"C — 501–600", B:"B — 601–700", A:"A — 701–800", S1:"S1 — 801–900", S2:"S2 — 901–998", R:"R — 999+" };
+const CLASS_COLORS = { D:"#B5B9C0", C:"#36C26B", B:"#2F8FE0", A:"#B25CE0", S1:"#F2A93C", S2:"#E0473D", R:"#D8B14A" };
+const classIndex = c => CLASSES.indexOf(c);
+const round = (n, d=2) => { const f = Math.pow(10,d); return Math.round(n*f)/f; };
+
+/* ---------------- 1. TIRES (DYNAMIC WEIGHT-SCALED FORMULA) ---------------- */
+const TIRE_BASE_COMPOUND = {
+  Stock: 27.0,
+  Street: 27.0,
+  Sport: 29.0,
+  "Semi-slick": 30.25,
+  Race: 32.25,
+  Rally: 29.0
+};
+const TIRE_HOT_TARGET = { Stock: 31, Street: 32.5, Sport: 32.5, "Semi-slick": 33.5, Race: 34, Rally: 27 };
+const META_PSI = 16;
+
+function tirePressure({ compound, drivetrain, useMeta, nightCold, weightLbs, enginePos }){
+  // 1. Base pressure by compound
+  const basePressure = TIRE_BASE_COMPOUND[compound] ?? 29.0;
+
+  // 2. Weight scaler — every 500 lb over/under a 2500 lb reference car adds/removes ~1.1 psi,
+  //    with a diminishing multiplier above 3,500 lb so heavy trucks/SUVs taper off instead of spiking
+  let weightScaler = 0;
+  if (weightLbs > 0){
+    const baseWeightDiff = (weightLbs - 2500) / 500;
+    let dynamicMultiplier = 1.1;
+    if (weightLbs > 3500){
+      dynamicMultiplier = 1.1 / (1 + (weightLbs - 3500) * 0.0002);
+    }
+    weightScaler = baseWeightDiff * dynamicMultiplier;
+  }
+
+  // 3. Drivetrain / layout tweak (front-biased split)
+  let frontTweak = 0.5; // default light front bias
+  if (drivetrain === "FWD") frontTweak = 1.0;
+  else if (drivetrain === "RWD") frontTweak = 0.5;
+  else if (drivetrain === "AWD" || enginePos === "Mid") frontTweak = 0.4;
+  const rearTweak = 0;
+
+  let stdFront = basePressure + weightScaler + frontTweak;
+  let stdRear = basePressure + weightScaler + rearTweak;
+
+  // 4. Hard safety cap — cold pressure never exceeds the natural telemetry sweet spot
+  const ABSOLUTE_MAX_PSI = 36.0;
+  if (stdFront > ABSOLUTE_MAX_PSI) stdFront = ABSOLUTE_MAX_PSI;
+  if (stdRear > ABSOLUTE_MAX_PSI) stdRear = ABSOLUTE_MAX_PSI;
+
+  if (nightCold){
+    stdFront -= 1.5;
+    stdRear -= 1.5;
+  }
+
+  stdFront = round(stdFront, 1);
+  stdRear = round(stdRear, 1);
+
+  return {
+    standard: { front: stdFront, rear: stdRear, band: "Dynamic (weight-scaled)", hotTarget: TIRE_HOT_TARGET[compound] },
+    meta: { front: META_PSI, rear: META_PSI },
+    useMeta: !!useMeta,
+    active: useMeta ? { front: META_PSI, rear: META_PSI } : { front: stdFront, rear: stdRear },
+  };
+}
+
+/* ---------------- 2. ALIGNMENT (WEIGHT-DISTRIBUTION-SCALED CAMBER) ---------------- */
+function alignment({ piClass, weightLbs, balance, frontWeightPct }){
+  const frontFrac = frontWeightPct / 100;
+  const rearFrac = 1 - frontFrac;
+
+  // Dynamic camber based on how much rolling load leans onto each contact patch
+  let camberFront = -(0.8 + (frontFrac * 1.2));
+  let camberRear = -(0.5 + (rearFrac * 1.0));
+
+  if (balance === "Aggressive") camberFront -= 0.2;
+  else if (balance === "Safer") camberFront += 0.2;
+
+  camberFront = round(camberFront, 1);
+  camberRear = round(camberRear, 1);
+
+  let caster = weightLbs < 2600 ? 5.5 : 6.8;
+  let toeFront = 0.15;  
+  let toeRear = -0.1;
+  if (balance === "Aggressive") toeFront = 0.2;  
+  if (balance === "Safer") toeFront = 0.1;       
+  return { camberFront, camberRear, caster, toeFront, toeRear };
+}
+
+/* ---------------- 3. SPRINGS (FIXED: DOUBLE-REDUCTION BUG) ---------------- */
+const SPRING_RANGE = { Min: 80, Max: 1100 }; 
+
+function springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, springMax }){
+  const min = springMin ?? SPRING_RANGE.Min;
+  const max = springMax ?? SPRING_RANGE.Max;
+  const range = max - min;
+
+  const frontWeightFrac = frontWeightPct / 100;
+  const rearWeightFrac = 1 - frontWeightFrac;
+
+  // Linear slider interpolation based cleanly on dynamic mass distribution
+  let rateFront = (range * frontWeightFrac) + min;
+  let rateRear = (range * rearWeightFrac) + min;
+
+  // Apply target cornering balance preference multipliers safely
+  if (balance === "Aggressive") {
+    rateFront *= 0.96; // Softer front yields sharper turn-in
+    rateRear *= 1.04;  // Stiffer rear encourages clean rotation
+  } else if (balance === "Safer") {
+    rateFront *= 1.04; 
+    rateRear *= 0.96;  
+  }
+
+  let drivetrainNote = "AWD — Formula output used directly.";
+  if (drivetrain === "RWD") { 
+    rateRear *= 1.04; 
+    drivetrainNote = "RWD — Rear spring rates stiffened +4% to handle corner-exit squats."; 
+  }
+  if (drivetrain === "FWD") { 
+    rateFront *= 1.03; 
+    drivetrainNote = "FWD — Front spring rates stiffened +3% to support braking & traction loads."; 
+  }
+
+  return {
+    rateFront: round(rateFront, 1), 
+    rateRear: round(rateRear, 1),
+    cwFront: round(weightLbs * frontWeightFrac / 2, 1), 
+    cwRear: round(weightLbs * rearWeightFrac / 2, 1),
+    drivetrainNote,
+    rangeUsed: { min, max },
+  };
+}
+
+/* ---------------- 4. ARB (FIXED: IGNORING CAR WEIGHT BUG) ---------------- */
+const ARB_DIRECTION_NOTE = {
+  AWD: "Soft front handles tight corners cleanly, stiff rear balances power delivery across axles.",
+  RWD: "Soft front forces sharper rotation; stiff rear controls oversteer progression on-throttle.",
+  FWD: "Front ARB scales slightly higher to maintain front track width; rear acts as main roll stabilizer.",
+};
+const ARB_ENGINE_NOTE = {
+  Front: "Front-Engine — Front bias makes a softer front ARB highly safe to maximize front tire grip.",
+  Mid: "Mid-Engine — Centered mass lets you lean closer into the sweet spot of both roll stiffness bands.",
+  Rear: "Rear-Engine — Keep front ARB explicitly soft to prevent entry understeer; do not maximize rear rigidity.",
+};
+
+function arbCalc({ piClass, frontWeightPct, arbMin, arbMax, drivetrain, enginePos, weightLbs }){
+  const hasRange = arbMin !== null && arbMin !== "" && arbMax !== null && arbMax !== "" && !isNaN(arbMin) && !isNaN(arbMax);
+  const min = hasRange ? Number(arbMin) : 0;
+  const max = hasRange ? Number(arbMax) : 65;
+  const range = max - min;
+
+  // Weight normalization scale based on a balanced 3,200 lb chassis
+  const weightFactor = weightLbs / 3200;
+  const frontWeightFrac = frontWeightPct / 100;
+  const rearWeightFrac = 1 - frontWeightFrac;
+
+  // Base mechanical targets scaled directly against vehicle mass metrics
+  let baseFront = 6.5 * weightFactor * (frontWeightFrac / 0.5);
+  let baseRear = 45 * weightFactor * (rearWeightFrac / 0.5);
+
+  const clampArb = (v) => Math.min(max, Math.max(min + (range * 0.05), v));
+
+  // Transform raw targets onto the game's actual upgrade slider range
+  let arbFront = clampArb(min + ((baseFront / 65) * range));
+  let arbRear = clampArb(min + ((baseRear / 65) * range));
+
+  let frontLow = clampArb(min + (((5 * weightFactor) / 65) * range));
+  let frontHigh = clampArb(min + (((8 * weightFactor) / 65) * range));
+  let rearLow = clampArb(min + (((40 * weightFactor) / 65) * range));
+  let rearHigh = clampArb(min + (((50 * weightFactor) / 65) * range));
+
+  return {
+    isRaw: !hasRange,
+    front: round(arbFront, 1), 
+    rear: round(arbRear, 1),
+    frontBand: [round(frontLow, 1), round(frontHigh, 1)], 
+    rearBand: [round(rearLow, 1), round(rearHigh, 1)],
+    directionNote: ARB_DIRECTION_NOTE[drivetrain],
+    engineNote: ARB_ENGINE_NOTE[enginePos],
+  };
+}
+
+/* ---------------- 5. DAMPING (FIXED: REAR UNDER-DAMPING SLIDER BUG) ---------------- */
+const DAMPING_MAX_SLIDER = 14; 
+
+function damping({ rateFront, rateRear, frontWeightPct, dampingMax }){
+  const max = dampingMax ?? DAMPING_MAX_SLIDER;
+  const clamp = v => Math.min(max, Math.max(1.5, v));
+
+  const frontWeightFrac = frontWeightPct / 100;
+  const rearWeightFrac = 1 - frontWeightFrac;
+
+  // Scale rebound frequencies independently based on respective corner mass weights
+  const reboundFront = round(clamp(max * 0.65 * frontWeightFrac * 2), 1);
+  const reboundRear = round(clamp(max * 0.65 * rearWeightFrac * 2), 1);
+
+  // Bump damping tracks precisely at 38% of their relative rebound values
+  const bumpFront = round(clamp(reboundFront * 0.38), 1);
+  const bumpRear = round(clamp(reboundRear * 0.38), 1);
+
+  return {
+    reboundFront, bumpFront, reboundRear, bumpRear,
+    pctDiff: round(Math.abs(rateRear - rateFront) / rateFront * 100, 1),
+    rearStiffer: rateRear >= rateFront,
+    reboundBand: [round(max * 0.60, 1), round(max * 0.70, 1)],
+  };
+}
+
+/* ---------------- 6. BRAKES ---------------- */
+const BRAKE_BASE = {
+  AWD: { "Stability-first":54,   "Trail-braking":51 },
+  RWD: { "Stability-first":52.5, "Trail-braking":49.5 },
+  FWD: { "Stability-first":58.5, "Trail-braking":53.5 },
+};
+const BRAKE_ENGINE_ADJ = { Front:0, Mid:1.5, Rear:1.5 };
+
+function brakesCalc({ piClass, drivetrain, brakingStyle, engineLocation, brakesUpgraded }){
+  const base = BRAKE_BASE[drivetrain][brakingStyle];
+  const adj = BRAKE_ENGINE_ADJ[engineLocation] ?? 0;
+  const front = round(Math.min(75, Math.max(35, base + adj)), 1);
+  const rear = round(100 - front, 1);
+  const idx = classIndex(piClass);
+  const callout = (idx <= 1 && !brakesUpgraded)
+    ? "Upgrade brakes at least one tier — stock brakes on D/C cars cause lockup and ruin trail-braking."
+    : null;
+  const pressure = 120;
+  return { front, rear, pressure, callout };
+}
+
+/* ---------------- 7. DIFFERENTIAL ---------------- */
+function differentialCalc({ drivetrain, balance, brakingStyle, enginePos }){
+  if (drivetrain === "AWD"){
+    const presets = {
+      Safer:      { frontAccel:40, frontDecel:5,  rearAccel:100, rearDecel:5,  centerRear:75 },
+      Neutral:    { frontAccel:45, frontDecel:3,  rearAccel:100, rearDecel:7,  centerRear:77 },
+      Aggressive: { frontAccel:50, frontDecel:0,  rearAccel:100, rearDecel:10, centerRear:80 },
+    };
+    const p = presets[balance] || presets.Neutral;
+    return { type:"AWD", frontAccel:p.frontAccel, frontDecel:p.frontDecel, rearAccel:p.rearAccel, rearDecel:p.rearDecel, centerRear:p.centerRear };
+  }
+  if (drivetrain === "RWD"){
+    const trail = brakingStyle === "Trail-braking";
+    const accelRange = trail ? [40,50] : [55,65];
+    const decelRange = trail ? [5,10] : [15,15];
+    const t = balance === "Safer" ? 0 : balance === "Aggressive" ? 1 : 0.5;
+    const accel = round(accelRange[0] + (accelRange[1]-accelRange[0])*t, 0);
+    const decel = round(decelRange[0] + (decelRange[1]-decelRange[0])*t, 0);
+    return { type:"RWD", accel, decel, trail };
+  }
+  return { type:"FWD", accel:95, decel:5 };
+}
+
+/* ---------------- 8. AERO ---------------- */
+const AERO_ENGINE_TARGET = { Front:0.44, Mid:0.42, Rear:0.41 };
+const AERO_DRIVETRAIN_TARGET = { AWD:0.415, RWD:0.435, FWD:0.41 };
+const AERO_DRIVETRAIN_BAND = { AWD:[0.40,0.43], RWD:[0.42,0.45], FWD:[0.40,0.42] };
+
+function aeroCalc({ piClass, drivetrain, enginePos, frontWeightPct }){
+  const idx = classIndex(piClass);
+  if (idx <= 1) return { na: true };
+  let target = (AERO_ENGINE_TARGET[enginePos] + AERO_DRIVETRAIN_TARGET[drivetrain]) / 2;
+  if (frontWeightPct > 53) target -= 0.01;
+  else if (frontWeightPct < 47) target += 0.01;
+  target = Math.min(0.45, Math.max(0.40, round(target, 3)));
+  return { na:false, target, band: AERO_DRIVETRAIN_BAND[drivetrain] };
+}
+
+/* ---------------- 9. GEARING ---------------- */
+function gearingCalc({ piClass, topSpeedTarget, numGears, peakRPM, redlineRPM }){
+  const defaultSpeeds = { D:140, C:140, B:170, A:170, S1:200, S2:200, R:220 };
+  const target = topSpeedTarget || defaultSpeeds[piClass];
+  const gears = numGears || 6;
+  const topRatio = round(308/target, 2);
+  const firstRatio = round(topRatio*3.0, 2);
+
+  // Optional powerband nudge: this is a heuristic shaping of the curve, not a
+  // physics formula. The base curve (p = 1) is an even-percentage drop per
+  // gear, which is the standard community starting point regardless of
+  // engine. If the player knows their power/torque graph, a narrow powerband
+  // (peak power close to redline) benefits from slightly tighter spacing in
+  // the TOP gears specifically, since falling out of a narrow band costs more
+  // acceleration than in a wide one. p < 1 compresses the top of the curve;
+  // p = 1 (no RPM data entered) reproduces the original curve exactly.
+  let p = 1;
+  let powerbandNote = null;
+  if (peakRPM && redlineRPM && redlineRPM > peakRPM){
+    const widthFrac = (redlineRPM - peakRPM) / redlineRPM; // ~0.05 narrow, ~0.35 wide
+    p = Math.max(0.65, Math.min(1, 0.65 + widthFrac));
+    powerbandNote = p < 0.95
+      ? `Narrow-ish powerband detected (peak ${peakRPM} / redline ${redlineRPM}) — top gears nudged slightly tighter to hold RPM in range after each shift.`
+      : `Wide powerband (peak ${peakRPM} / redline ${redlineRPM}) — spacing left close to the standard even curve.`;
+  }
+
+  const ladder = [];
+  for (let i=0; i<gears; i++){
+    const t = i/(gears-1);
+    const shaped = Math.pow(t, p);
+    ladder.push(round(firstRatio * Math.pow(topRatio/firstRatio, shaped), 2));
+  }
+  return { target, ladder, powerbandNote };
+}
+
+/* ---- Upgrade priorities & Meta tables ---- */
+const CLASS_META = {
+  D:  { tire:"Stock tires almost always", drivetrain:"Whatever's cheapest/lightest", focus:"Brakes, weight reduction, suspension unlock" },
+  C:  { tire:"Stock tires almost always", drivetrain:"RWD/AWD fine — don't overspend PI on a swap", focus:"Brakes, weight reduction, ARBs/diff unlock" },
+  B:  { tire:"Stock most of the time; street tires for tight circuits", drivetrain:"RWD viable; AWD if PI allows", focus:"Weight reduction, suspension, brake upgrade" },
+  A:  { tire:"Street minimum; semi-slick for heavier/older cars", drivetrain:"AWD increasingly competitive", focus:"Tire upgrade, aero unlock, drivetrain tuning" },
+  S1: { tire:"Semi-slick to race (slick)", drivetrain:"AWD generally dominant", focus:"Aero, diff tuning, engine internals" },
+  S2: { tire:"Race (slick) typical", drivetrain:"AWD dominant", focus:"Maximize PWR after the chassis is locked in" },
+  R:  { tire:"Race (slick), track-only builds", drivetrain:"AWD or purpose-built RWD", focus:"Full race-spec everything" },
+};
+const ENGINE_ORDER = ["Race Exhaust","Race Intake","Intake Manifold","Ignition","Fuel System","Flywheel","Camshaft","Pistons/Compression","Valves","Displacement"];
+
+function upgradePriority({ currentClass, targetClass, currentDrivetrain }){
+  const idxCur = classIndex(currentClass), idxTgt = classIndex(targetClass);
+  const curMeta = CLASS_META[currentClass], tgtMeta = CLASS_META[targetClass];
+  const steps = [];
+
+  if (idxTgt <= 1) steps.push({ title:"Tires", included:false, detail:`Stay on your current compound — ${targetClass} class doesn't reward a tire upgrade.` });
+  else if (curMeta.tire === tgtMeta.tire) steps.push({ title:"Tires", included:false, detail:`Your current tire meta already matches ${targetClass} class expectations (${tgtMeta.tire.toLowerCase()}).` });
+  else steps.push({ title:"Tires", included:true, detail:`Move toward: ${tgtMeta.tire}.` });
+
+  if (idxCur <= 1) steps.push({ title:"Brakes", included:true, flagged:true, detail:"Upgrade brakes at least one tier — stock D/C brakes cause lockup and will hold this build back regardless of target class." });
+  else steps.push({ title:"Brakes", included:true, detail:"Worth a tier if you plan to trail-brake or haven't upgraded since a lower class." });
+
+  steps.push({ title:"Weight reduction", included:true, detail:"Always near the top of the list — the best PI-per-performance upgrade in the game." });
+  steps.push({ title:"Suspension (Race)", included:true, detail:"Required to unlock the full tuning menu — springs, dampers, ARBs, alignment." });
+
+  if (idxCur <= 1) steps.push({ title:"Anti-roll bars + Differential unlock", included:true, flagged:true, detail:"Race differential is essential coming from D/C — it unlocks the lock sliders this calculator tunes in Part 1." });
+  else steps.push({ title:"Anti-roll bars + Differential unlock", included:true, detail:"Confirm race suspension/diff are unlocked so ARB and lock-slider tuning is available." });
+
+  const favorsAWD = idxTgt >= 3;
+  if (!currentDrivetrain) steps.push({ title:"Drivetrain swap", included:false, detail:"Tell us the car's current drivetrain to get a swap recommendation." });
+  else if (currentDrivetrain === "AWD") steps.push({ title:"Drivetrain swap", included:false, detail:"Already AWD — nothing to swap." });
+  else if (favorsAWD) steps.push({ title:"Drivetrain swap", included:true, detail:`${targetClass} class meta favors AWD over ${currentDrivetrain}. Worth considering, but weigh the PI cost of the swap against simply tuning the diff you have.` });
+  else steps.push({ title:"Drivetrain swap", included:false, detail:`Don't swap drivetrain unless the car is badly unbalanced — it's rarely worth the PI at ${targetClass} class.` });
+
+  if (idxTgt <= 1) steps.push({ title:"Aero parts", included:false, detail:`Aero isn't typically unlocked or useful at ${targetClass} class — skip it for now.` });
+  else if (idxCur >= 2) steps.push({ title:"Aero parts", included:false, detail:"Aero is likely already unlocked at your current class — fine-tune the wings you have instead of unlocking new parts." });
+  else steps.push({ title:"Aero parts", included:true, detail:`Unlock aero — ${targetClass} class rewards it once tires and chassis are sorted.` });
+
+  steps.push({ title:"Engine upgrades", included:true, detail:`Add power last, only enough to land inside the ${targetClass} PI range. Apply in order: ${ENGINE_ORDER.join(" → ")}. Stop as soon as you hit the PI ceiling.` });
+
+  return steps;
+}
+
+/* =========================================================================
+   UI WIRING
+   ========================================================================= */
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab + "-tab").classList.add("active");
+  });
+});
+
+document.getElementById("infoToggle").addEventListener("click", () => {
+  const panel = document.getElementById("infoPanel");
+  panel.hidden = !panel.hidden;
+});
+
+// (FIXED: ACCURATE DEFAULT WEIGHT ASSIGNMENTS BASED ON PERFORMANCE ENGINE POOL)
+function autoFrontWeight(enginePos){
+  return { Front: 54, Mid: 43, Rear: 38 }[enginePos];
+}
+
+let weightUnit = "lb";
+document.querySelectorAll("#unitToggle button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const weightInput = document.getElementById("weight");
+    const current = Number(weightInput.value) || 0;
+    if (btn.dataset.unit === weightUnit) return;
+    if (btn.dataset.unit === "kg") weightInput.value = round(current/2.20462, 0);
+    else weightInput.value = round(current*2.20462, 0);
+    weightUnit = btn.dataset.unit;
+    document.querySelectorAll("#unitToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    runCalculator();
+  });
+});
+
+function fr(frontVal, rearVal, unit){
+  return `<div class="fr-row">
+    <div class="fr-chip front"><div class="lbl">Front</div><div class="val">${frontVal}<span class="unit">${unit || ""}</span></div></div>
+    <div class="fr-chip rear"><div class="lbl">Rear</div><div class="val">${rearVal}<span class="unit">${unit || ""}</span></div></div>
+  </div>`;
+}
+function rowLabel(text){
+  return `<div class="field-hint" style="margin:8px 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-size:10.2px">${text}</div>`;
+}
+
+function card(title, bodyHtml, why){
+  return `<div class="card"><h3><span class="dot"></span>${title}</h3>${bodyHtml}${why ? `<div class="why">${why}</div>` : ""}</div>`;
+}
+
+function runCalculator(){
+  const weightRaw = Number(document.getElementById("weight").value) || 0;
+  const weightLbs = weightUnit === "kg" ? weightRaw*2.20462 : weightRaw;
+  const enginePos = document.getElementById("enginePos").value;
+  const frontWeightInput = document.getElementById("frontWeight").value;
+  const frontWeightPct = frontWeightInput !== "" ? Number(frontWeightInput) : autoFrontWeight(enginePos);
+  const drivetrain = document.getElementById("drivetrain").value;
+  const compound = document.getElementById("compound").value;
+  const piClass = document.getElementById("piClass").value;
+  const brakingStyle = document.getElementById("brakingStyle").value;
+  const balance = document.getElementById("balance").value;
+  const arbMin = document.getElementById("arbMin").value;
+  const arbMax = document.getElementById("arbMax").value;
+  const springMinInput = document.getElementById("springMin").value;
+  const springMaxInput = document.getElementById("springMax").value;
+  const springMin = springMinInput !== "" ? Number(springMinInput) : null;
+  const springMax = springMaxInput !== "" ? Number(springMaxInput) : null;
+  const topSpeedInput = document.getElementById("topSpeed").value;
+  const topSpeedTarget = topSpeedInput !== "" ? Number(topSpeedInput) : null;
+  const numGears = Number(document.getElementById("numGears").value) || 6;
+  const peakRPMInput = document.getElementById("peakRPM").value;
+  const peakRPM = peakRPMInput !== "" ? Number(peakRPMInput) : null;
+  const redlineRPMInput = document.getElementById("redlineRPM").value;
+  const redlineRPM = redlineRPMInput !== "" ? Number(redlineRPMInput) : null;
+  const brakesUpgraded = document.getElementById("brakesUpgraded").checked;
+  const useMeta = document.getElementById("useMetaPressure").checked;
+  const nightCold = document.getElementById("nightCold").checked;
+
+  const color = CLASS_COLORS[piClass];
+  document.documentElement.style.setProperty("--class-color", color);
+  document.documentElement.style.setProperty("--class-color-soft", color + "26");
+  document.getElementById("classBadge").textContent = piClass;
+  document.getElementById("classLabel").textContent = CLASS_LABELS[piClass];
+
+  const tp = tirePressure({ compound, drivetrain, useMeta, nightCold, weightLbs, enginePos });
+  const al = alignment({ piClass, weightLbs, balance, frontWeightPct });
+  const sp = springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, springMax });
+  const ar = arbCalc({ piClass, frontWeightPct, arbMin, arbMax, drivetrain, enginePos, weightLbs });
+  const dm = damping({ rateFront: sp.rateFront, rateRear: sp.rateRear, frontWeightPct });
+  const br = brakesCalc({ piClass, drivetrain, brakingStyle, engineLocation: enginePos, brakesUpgraded });
+  const df = differentialCalc({ drivetrain, balance, brakingStyle, enginePos });
+  const ae = aeroCalc({ piClass, drivetrain, enginePos, frontWeightPct });
+  const ge = gearingCalc({ piClass, topSpeedTarget, numGears, peakRPM, redlineRPM });
+
+  let html = "";
+
+  // Tires
+  html += card("Tires" + (tp.useMeta ? " (low-pressure meta)" : ""),
+    fr(tp.active.front, tp.active.rear, " psi"),
+    tp.useMeta
+      ? "⚠️ Competitive contact-patch meta — tire damage barely matters in standard lobbies/Rivals, but this is a real departure from \"feel-first\" tuning. Switch off for a more natural feel."
+      : `Scaled by compound, car weight, and drivetrain · target hot: ~${tp.standard.hotTarget} psi · front gets the extra load.`
+  );
+
+  // Alignment
+  html += card("Alignment",
+    rowLabel("Camber") + fr(al.camberFront + "°", al.camberRear + "°", "") +
+    rowLabel("Toe (+ = out, − = in)") + fr((al.toeFront >= 0 ? "+" : "") + al.toeFront.toFixed(2) + "°", al.toeRear.toFixed(2) + "°", "") +
+    `<div class="field-hint" style="margin-top:6px">Caster: <b style="color:var(--text)">${al.caster}°</b> (both)</div>`,
+    "Front toe-OUT is intentional for road/touge — it's what gives instant turn-in on tight street corners. Rear stays slightly toe-in for stability."
+  );
+
+  // Springs
+  html += card("Springs",
+    fr(sp.rateFront, sp.rateRear, " lb/in"),
+    `Corner weight ${sp.cwFront} / ${sp.cwRear} lb · slider range used: ${sp.rangeUsed.min}–${sp.rangeUsed.max}<br>${sp.drivetrainNote}<br>Ride height: run max, front slightly higher than rear.`
+  );
+
+  // ARB
+  html += card("Anti-roll bars" + (ar.isRaw ? " (raw 0–65)" : ""),
+    fr(ar.front, ar.rear, "") +
+    `<div class="field-hint" style="margin-top:8px">Front band: <b style="color:var(--text)">${ar.frontBand[0]}–${ar.frontBand[1]}</b> · Rear band: <b style="color:var(--text)">${ar.rearBand[0]}–${ar.rearBand[1]}</b></div>`,
+    `${ar.directionNote} ${ar.engineNote} ${ar.isRaw ? "No slider range entered — values are on a normalized 0–65 scale, rescale to your car's actual ARB min/max." : ""} Road/touge setup wants a soft front and a noticeably stiffer rear — that's the opposite of locking both ends near max.`
+  );
+
+  // Damping
+  html += card("Damping",
+    rowLabel("Rebound") + fr(dm.reboundFront, dm.reboundRear, "") +
+    rowLabel("Bump") + fr(dm.bumpFront, dm.bumpRear, ""),
+    `Rebound target band: ${dm.reboundBand[0]}–${dm.reboundBand[1]} (60–70% of max slider). Bump = 35–40% of Rebound. Rear nudged dynamically based on axle weight distribution to prevent bounce.`
+  );
+
+  // Brakes
+  html += card("Brakes",
+    fr(br.front + "%", br.rear + "%", "") +
+    `<div class="field-hint" style="margin-top:6px">Pressure: <b style="color:var(--text)">${br.pressure}%</b> starting point (target band 110–130%)</div>`,
+    `Base bias for ${drivetrain} / ${brakingStyle.toLowerCase()}, plus an engine-position adjustment. Slide the brake balance toward "Front" for more front-end stopping bias. Lock up too easily → reduce pressure toward 110%; not enough stopping power → increase toward 130%.`
+    + (br.callout ? `<div class="callout">${br.callout}</div>` : "")
+  );
+
+  // Differential
+  let diffBody, diffWhy;
+  if (df.type === "AWD"){
+    diffBody = `<div class="fr-row">
+        <div class="fr-chip front"><div class="lbl">Front accel</div><div class="val">${df.frontAccel}<span class="unit">%</span></div></div>
+        <div class="fr-chip rear"><div class="lbl">Rear accel</div><div class="val">${df.rearAccel}<span class="unit">%</span></div></div>
+      </div>
+      <div class="fr-row">
+        <div class="fr-chip front"><div class="lbl">Front decel</div><div class="val">${df.frontDecel}<span class="unit">%</span></div></div>
+        <div class="fr-chip rear"><div class="lbl">Rear decel</div><div class="val">${df.rearDecel}<span class="unit">%</span></div></div>
+      </div>
+      <div class="field-hint" style="margin-top:6px">Center balance: <b style="color:var(--text)">${df.centerRear}% rear</b></div>`;
+    diffWhy = "Rear Accel locked at 100% with a strong rear Center Bias — this is what gives the rear-biased power-down needed out of tight 90° corners. Front Accel stays modest so the front end doesn't fight your steering.";
+  } else if (df.type === "RWD"){
+    diffBody = fr(df.accel + "%", df.decel + "%", "");
+    diffWhy = df.trail
+      ? "Trail-braking range is lower (40–50% accel) so the car rotates more freely on entry."
+      : "Stability-first range (55–65% accel) for stronger, more predictable power-down.";
+  } else {
+    diffBody = fr(df.accel + "%", df.decel + "%", "");
+    diffWhy = "FWD road/circuit baseline — kept high on accel lock to fight torque steer and pull the car straight.";
+  }
+  html += card("Differential" + (df.type !== "AWD" ? ` (${df.type})` : ""), diffBody, diffWhy);
+
+  // Aero
+  html += card("Aero",
+    ae.na ? `<p class="na-note">N/A — aero isn't typically unlocked at this class. Focus PI elsewhere.</p>`
+      : `<div class="single-val"><span class="val">${ae.target.toFixed(2)}</span><span class="unit">Aero Balance target (band ${ae.band[0]}–${ae.band[1]})</span></div>`,
+    ae.na ? "" : "Set both wings to max, check the Aero Balance stat, then reduce the FRONT wing until it reads this target. Front-heavy cars bias low in the band; rear-heavy cars bias high."
+  );
+
+  // Gearing
+  html += card("Gearing",
+    `<div class="field-hint" style="margin-bottom:6px">Target top speed: <b style="color:var(--text)">${ge.target} mph</b> at redline in top gear</div>
+     <div class="ladder">${ge.ladder.map(r => `<span>${r}</span>`).join("")}</div>`,
+    "Relative ratio ladder, 1st → top, on a smooth curve. Fine-tune 1st gear at the strip for launch."
+    + (ge.powerbandNote ? `<div class="field-hint" style="margin-top:6px">${ge.powerbandNote}</div>` : "")
+  );
+
+  document.getElementById("cardsGrid").innerHTML = html;
+}
+
+document.getElementById("calcForm").addEventListener("submit", e => { e.preventDefault(); runCalculator(); });
+document.getElementById("calcForm").addEventListener("input", runCalculator);
+document.getElementById("calcForm").addEventListener("change", runCalculator);
+
+function renderMetaTable(){
+  const body = document.getElementById("metaTableBody");
+  body.innerHTML = CLASSES.map(c => {
+    const m = CLASS_META[c];
+    return `<tr><td><b style="color:${CLASS_COLORS[c]}">${c}</b></td><td>${{D:"≤500",C:"501–600",B:"601–700",A:"701–800",S1:"801–900",S2:"901–998",R:"999+"}[c]}</td><td>${m.tire}</td><td>${m.drivetrain}</td><td>${m.focus}</td></tr>`;
+  }).join("");
+}
+
+function runMeta(){
+  const currentClass = document.getElementById("currentClass").value;
+  const targetClass = document.getElementById("targetClass").value;
+  const currentDrivetrain = document.getElementById("currentDrivetrain").value || null;
+  const steps = upgradePriority({ currentClass, targetClass, currentDrivetrain });
+
+  document.getElementById("stepList").innerHTML = steps.map((s, i) => `
+    <div class="step ${s.included ? "included" : "skip"} ${s.flagged ? "flagged" : ""}">
+      <div class="num">${String(i+1).padStart(2,"0")}</div>
+      <div class="body">
+        <h4><span class="pill">${s.included ? "Do this" : "Skip"}</span>${s.title}</h4>
+        <p>${s.detail}</p>
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("metaForm").addEventListener("submit", e => { e.preventDefault(); runMeta(); });
+document.getElementById("metaForm").addEventListener("change", runMeta);
+
+// ---- Init ----
+renderMetaTable();
+runCalculator();
+runMeta();
+</script>
+</body>
+</html>
