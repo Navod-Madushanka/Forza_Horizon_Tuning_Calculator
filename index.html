@@ -681,14 +681,17 @@ function damping({ rateFront, rateRear, frontWeightPct, dampingMax }){
   const max = dampingMax ?? DAMPING_MAX_SLIDER;
   const clamp = v => Math.min(max, Math.max(1.5, v));
 
-  const frontWeightFrac = frontWeightPct / 100;
-  const rearWeightFrac = 1 - frontWeightFrac;
+  // Use the real spring-rate split, not raw corner weight — damping has to
+  // control whatever the spring is actually doing. Weight-fraction alone
+  // ignores drivetrain/balance stiffening (e.g. RWD's +4% rear bump), which
+  // is what was leaving a stiffened rear under-damped relative to the front.
+  const totalRate = rateFront + rateRear;
+  const frontRateFrac = totalRate > 0 ? rateFront / totalRate : frontWeightPct / 100;
+  const rearRateFrac = 1 - frontRateFrac;
 
-  // Scale rebound frequencies independently based on respective corner mass weights
-  const reboundFront = round(clamp(max * 0.65 * frontWeightFrac * 2), 1);
-  const reboundRear = round(clamp(max * 0.65 * rearWeightFrac * 2), 1);
+  const reboundFront = round(clamp(max * 0.65 * frontRateFrac * 2), 1);
+  const reboundRear = round(clamp(max * 0.65 * rearRateFrac * 2), 1);
 
-  // Bump damping tracks precisely at 38% of their relative rebound values
   const bumpFront = round(clamp(reboundFront * 0.38), 1);
   const bumpRear = round(clamp(reboundRear * 0.38), 1);
 
