@@ -581,8 +581,17 @@ function alignment({ piClass, weightLbs, balance, frontWeightPct }){
   return { camberFront, camberRear, caster, toeFront, toeRear };
 }
 
-/* ---------------- 3. SPRINGS (FIXED: DOUBLE-REDUCTION BUG) ---------------- */
+/* ---------------- 3. SPRINGS (FIXED: WEIGHT-PROPORTIONAL DIRECTION BUG) ---------------- */
 const SPRING_RANGE = { Min: 80, Max: 1100 }; 
+// Fixed soft-front / stiff-rear bias, same intent as the ARB base targets
+// (6.5 vs 45 out of 65) below. Previously rate was scaled directly
+// proportional to corner weight fraction, which meant whichever axle
+// carried more weight came out STIFFER — for a typical front-engine car
+// (54% front) that put the front spring stiffer than the rear, the
+// opposite of the road/touge "soft front, stiff rear" design this
+// calculator documents everywhere else (ARB, alignment, damping notes).
+const SPRING_FRONT_BASE_FRAC = 0.42;
+const SPRING_REAR_BASE_FRAC = 0.58;
 
 function springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, springMax }){
   const min = springMin ?? SPRING_RANGE.Min;
@@ -592,9 +601,18 @@ function springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, sp
   const frontWeightFrac = frontWeightPct / 100;
   const rearWeightFrac = 1 - frontWeightFrac;
 
-  // Linear slider interpolation based cleanly on dynamic mass distribution
-  let rateFront = (range * frontWeightFrac) + min;
-  let rateRear = (range * rearWeightFrac) + min;
+  // Weight distribution nudges the split around the fixed soft-front/
+  // stiff-rear bias rather than flipping its direction. An axle carrying
+  // more weight gets relatively firmer (closer to the other axle), but a
+  // realistic front weight split (up to ~63% front) never overturns the
+  // rear-stiffer bias, matching the ARB/damping direction this setup relies on.
+  const weightSkew = frontWeightFrac - 0.5; // e.g. +0.04 for a 54% front car
+  const frontFrac = Math.min(0.95, Math.max(0.05, SPRING_FRONT_BASE_FRAC + weightSkew * 0.6));
+  const rearFrac = Math.min(0.95, Math.max(0.05, SPRING_REAR_BASE_FRAC - weightSkew * 0.6));
+
+  // Linear slider interpolation using the soft-front/stiff-rear split above
+  let rateFront = (range * frontFrac) + min;
+  let rateRear = (range * rearFrac) + min;
 
   // Apply target cornering balance preference multipliers safely
   if (balance === "Aggressive") {
@@ -681,17 +699,27 @@ function damping({ rateFront, rateRear, frontWeightPct, dampingMax }){
   const max = dampingMax ?? DAMPING_MAX_SLIDER;
   const clamp = v => Math.min(max, Math.max(1.5, v));
 
-  // Use the real spring-rate split, not raw corner weight — damping has to
-  // control whatever the spring is actually doing. Weight-fraction alone
-  // ignores drivetrain/balance stiffening (e.g. RWD's +4% rear bump), which
-  // is what was leaving a stiffened rear under-damped relative to the front.
+  // Rebound damping's job is to control the ACTUAL spring it's paired with —
+  // a stiffer spring stores/returns more energy and needs more rebound to
+  // keep from pinging back, regardless of how much static weight that
+  // corner carries. Previously this split was computed purely from corner
+  // weight fraction, ignoring drivetrain/balance spring adjustments (e.g.
+  // RWD's +4% rear stiffening). That left a stiffened rear spring relatively
+  // UNDER-damped, which shows up as a slight rear pogo/float and inconsistent
+  // corner-exit traction — most noticeable on front-engine RWD cars where the
+  // weight split (front-heavy) and the spring stiffening (rear-heavy) pull
+  // in opposite directions. Falls back to weight fraction only if rates are
+  // unavailable (e.g. zero).
   const totalRate = rateFront + rateRear;
-  const frontRateFrac = totalRate > 0 ? rateFront / totalRate : frontWeightPct / 100;
+  const frontWeightFrac = frontWeightPct / 100;
+  const frontRateFrac = totalRate > 0 ? rateFront / totalRate : frontWeightFrac;
   const rearRateFrac = 1 - frontRateFrac;
 
+  // Scale rebound frequencies independently based on each axle's actual spring rate share
   const reboundFront = round(clamp(max * 0.65 * frontRateFrac * 2), 1);
   const reboundRear = round(clamp(max * 0.65 * rearRateFrac * 2), 1);
 
+  // Bump damping tracks precisely at 38% of their relative rebound values
   const bumpFront = round(clamp(reboundFront * 0.38), 1);
   const bumpRear = round(clamp(reboundRear * 0.38), 1);
 
