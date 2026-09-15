@@ -2,1094 +2,1197 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FH6 Setup Sheet — Tuning Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0E1014;
-    --bg-raise: #14171D;
-    --surface: #181B21;
-    --surface-2: #1F232B;
-    --border: #2A2F38;
-    --border-soft: #232730;
-    --text: #ECEEF1;
-    --text-muted: #8B919C;
-    --text-faint: #595F6B;
-    --accent: #FF5630;
-    --accent-soft: rgba(255,86,48,0.14);
-    --front: #36D6C8;
-    --front-soft: rgba(54,214,200,0.12);
-    --rear: #F2A93C;
-    --rear-soft: rgba(242,169,60,0.12);
-    --good: #36C26B;
-    --warn: #E0473D;
-    --class-color: #B5B9C0;
-    --class-color-soft: rgba(181,185,192,0.14);
-    --radius: 7px;
-    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
-    --display: 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
-    --body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --bg:#0D0F13;
+    --surface:#151920;
+    --surface-2:#1C212A;
+    --border:#272D38;
+    --border-soft:#1F242D;
+    --text:#ECEEF1;
+    --muted:#8A919E;
+    --faint:#5A616E;
+    --accent:#E0483A;
+    --accent-soft:rgba(224,72,58,0.13);
+    --front:#3FD0C4;
+    --front-soft:rgba(63,208,196,0.11);
+    --rear:#EDA640;
+    --rear-soft:rgba(237,166,64,0.11);
+    --good:#3CBE70;
+    --warn:#E0B03A;
+    --radius:8px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+    --display:'Rajdhani',ui-sans-serif,system-ui,sans-serif;
+    --body:'Inter',ui-sans-serif,system-ui,-apple-system,sans-serif;
   }
-
-  *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
   body{
-    background: var(--bg);
-    background-image:
-      radial-gradient(circle at 12% 0%, rgba(255,86,48,0.06), transparent 45%),
-      radial-gradient(circle at 90% 8%, rgba(54,214,200,0.05), transparent 40%);
-    color: var(--text);
-    font-family: var(--body);
-    line-height: 1.45;
-    -webkit-font-smoothing: antialiased;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{ font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; margin: 0; }
-  button{ font-family: inherit; }
-  ::selection{ background: var(--accent-soft); }
+  h1,h2,h3,h4{font-family:var(--display);font-weight:700;margin:0;letter-spacing:.01em;}
+  button{font-family:inherit;}
+  a{color:var(--front);}
+  :focus-visible{outline:2px solid var(--front);outline-offset:2px;}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
-  .app{ max-width: 1180px; margin: 0 auto; padding: 18px 20px 60px; }
+  .app{max-width:1200px;margin:0 auto;padding:20px 20px 72px;}
 
-  /* ---------- Topbar ---------- */
-  .topbar{
-    display:flex; align-items:center; justify-content:space-between; gap:16px;
-    flex-wrap: wrap;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border-soft);
-    margin-bottom: 16px;
-  }
-  .brand{ display:flex; align-items:baseline; gap:10px; }
-  .brand-mark{
-    font-family: var(--mono); font-weight:700; font-size:13px; letter-spacing: 0.08em;
-    color: var(--bg); background: var(--accent); padding: 4px 7px; border-radius: 4px;
-  }
-  .brand h1{ font-size: 22px; }
-  .brand .sub{ color: var(--text-muted); font-size: 12.5px; margin-top: 2px; }
+  /* Topbar */
+  .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-bottom:14px;border-bottom:1px solid var(--border-soft);margin-bottom:6px;}
+  .brand{display:flex;align-items:center;gap:11px;}
+  .mark{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.06em;
+    color:#fff;background:var(--accent);padding:5px 8px;border-radius:5px;}
+  .brand h1{font-size:23px;line-height:1.1;}
+  .brand .sub{color:var(--muted);font-size:12.5px;}
+  .verchip{font-family:var(--mono);font-size:11px;color:var(--faint);border:1px solid var(--border);
+    padding:4px 8px;border-radius:20px;}
 
-  .info-toggle{
-    background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
-    font-size: 12.5px; padding: 8px 12px; border-radius: var(--radius); cursor:pointer;
-    transition: border-color .15s, color .15s;
-  }
-  .info-toggle:hover{ border-color: var(--accent); color: var(--text); }
+  /* Tabs */
+  .tabs{display:flex;gap:26px;margin:14px 0 20px;border-bottom:1px solid var(--border-soft);overflow-x:auto;}
+  .tab{background:none;border:none;color:var(--muted);font-family:var(--display);font-weight:600;
+    font-size:15px;padding:9px 0;cursor:pointer;border-bottom:2px solid transparent;
+    transform:translateY(1px);white-space:nowrap;transition:color .15s,border-color .15s;}
+  .tab:hover{color:var(--text);}
+  .tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent);}
+  .panel-tab{display:none;}
+  .panel-tab.active{display:block;}
 
-  .info-panel{
-    background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 14px 16px; margin-bottom: 16px; font-size: 13.2px; color: var(--text-muted);
-  }
-  .info-panel strong{ color: var(--text); }
+  .layout{display:grid;grid-template-columns:326px 1fr;gap:22px;align-items:start;}
+  @media (max-width:900px){.layout{grid-template-columns:1fr;}}
 
-  /* ---------- Tabs ---------- */
-  .tabs{ display:flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
-  .tab{
-    background: transparent; border: none; color: var(--text-muted);
-    font-family: var(--display); font-weight: 600; font-size: 14.5px; letter-spacing: 0.02em;
-    padding: 10px 4px; margin-right: 22px; cursor: pointer;
-    border-bottom: 2px solid transparent; transform: translateY(1px);
-    transition: color .15s, border-color .15s;
-  }
-  .tab:hover{ color: var(--text); }
-  .tab.active{ color: var(--text); border-bottom-color: var(--accent); }
+  .panel{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:18px;}
+  .panel > h2{font-size:14px;color:var(--muted);letter-spacing:.06em;margin-bottom:14px;text-transform:uppercase;}
 
-  .tab-panel{ display:none; }
-  .tab-panel.active{ display:block; animation: fadeIn .18s ease; }
-  @keyframes fadeIn{ from{ opacity:0; transform: translateY(2px); } to{ opacity:1; transform:none; } }
+  /* Form */
+  .field{margin-bottom:12px;}
+  .field > label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:500;}
+  .hint{font-size:11.5px;color:var(--faint);margin-top:4px;line-height:1.45;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  input[type=number],input[type=text],select{width:100%;background:var(--surface-2);
+    border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:6px;
+    font-size:13.5px;font-family:var(--body);outline:none;transition:border-color .15s;}
+  input:focus,select:focus{border-color:var(--front);}
+  select{appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 16px) center,calc(100% - 11px) center;
+    background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px;}
+  .toggle{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .toggle button{flex:1;background:var(--surface-2);border:none;color:var(--muted);
+    padding:8px 0;cursor:pointer;font-size:12.5px;}
+  .toggle button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600;}
+  fieldset{border:none;padding:0;margin:0 0 14px;}
+  legend{font-size:11.5px;color:var(--faint);padding:0;margin-bottom:7px;}
+  .divider{height:1px;background:var(--border-soft);margin:16px 0;}
 
-  /* ---------- Layout ---------- */
-  .layout{ display:grid; grid-template-columns: 330px 1fr; gap: 22px; align-items:start; }
-  @media (max-width: 880px){
-    .layout{ grid-template-columns: 1fr; }
-  }
+  /* Mechanical balance hero */
+  .mech{background:linear-gradient(180deg,var(--surface) 0%,#12161D 100%);
+    border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;}
+  .mech-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .mech h2{font-size:17px;}
+  .mech p{margin:6px 0 0;font-size:13px;color:var(--muted);max-width:62ch;}
+  .gauge{margin-top:16px;}
+  .gauge-track{position:relative;height:34px;border-radius:5px;overflow:hidden;
+    background:linear-gradient(90deg,#3A2A2A 0%,#3A2A2A 37.5%,rgba(60,190,112,.30) 37.5%,rgba(60,190,112,.30) 62.5%,#3A2A2A 62.5%,#3A2A2A 100%);
+    border:1px solid var(--border);}
+  .gauge-zone{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;}
+  .gauge-sweet{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--good);}
+  .gauge-scale{display:flex;justify-content:space-between;font-family:var(--mono);
+    font-size:10.5px;color:var(--faint);margin-top:6px;}
+  .mech-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:16px;}
+  .mstep{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:6px;padding:11px 13px;}
+  .mstep b{display:block;font-family:var(--display);font-size:14px;margin-bottom:3px;}
+  .mstep span{font-size:12.2px;color:var(--muted);}
 
-  .panel{
-    background: var(--surface); border: 1px solid var(--border-soft);
-    border-radius: var(--radius); padding: 18px;
-  }
-  .panel h2{ font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:16px;}
+  .card h3{font-size:15.5px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+  .card h3 .idx{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:400;}
+  .why{margin-top:12px;padding-top:11px;border-top:1px solid var(--border-soft);
+    font-size:12.4px;color:var(--muted);line-height:1.55;}
+  .why b{color:var(--text);font-weight:600;}
+  .src{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--faint);}
 
-  /* ---------- Form ---------- */
-  .field{ margin-bottom: 13px; }
-  .field label{
-    display:block; font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;
-  }
-  .field-hint{ font-size: 11px; color: var(--text-faint); margin-top: 4px; }
-  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .fr{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px;}
+  .chip{border-radius:6px;padding:10px 12px;border:1px solid;}
+  .chip.f{background:var(--front-soft);border-color:rgba(63,208,196,.3);}
+  .chip.r{background:var(--rear-soft);border-color:rgba(237,166,64,.3);}
+  .chip .lbl{font-size:10.5px;letter-spacing:.05em;margin-bottom:2px;font-family:var(--mono);}
+  .chip.f .lbl{color:var(--front);}
+  .chip.r .lbl{color:var(--rear);}
+  .chip .val{font-family:var(--mono);font-size:21px;font-weight:700;line-height:1.15;}
+  .chip .val .u{font-size:11.5px;font-weight:400;color:var(--muted);margin-left:3px;}
+  .solo{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:6px;padding:11px 13px;}
+  .solo .val{font-family:var(--mono);font-size:21px;font-weight:700;}
+  .solo .u{font-size:11.5px;color:var(--muted);margin-left:5px;}
+  .sublabel{font-family:var(--mono);font-size:10.2px;letter-spacing:.05em;color:var(--faint);margin:10px 0 5px;}
+  .band{font-size:11.8px;color:var(--faint);margin-top:7px;}
+  .band b{color:var(--muted);font-weight:500;}
+  .flag{margin-top:10px;background:var(--accent-soft);border-left:2px solid var(--accent);
+    padding:8px 11px;border-radius:0 5px 5px 0;font-size:12.2px;color:#F0C4BD;}
+  .na{color:var(--faint);font-size:13px;margin:0;}
+  .ladder{display:flex;flex-wrap:wrap;gap:6px;}
+  .ladder span{font-family:var(--mono);font-size:12px;background:var(--surface-2);
+    border:1px solid var(--border-soft);border-radius:4px;padding:5px 8px;}
+  .ladder span i{font-style:normal;color:var(--faint);margin-right:5px;}
 
-  input[type=number], input[type=text], select{
-    width:100%; background: var(--surface-2); border: 1px solid var(--border);
-    color: var(--text); padding: 9px 10px; border-radius: 6px; font-size: 13.5px;
-    font-family: var(--body); outline: none; transition: border-color .15s;
-  }
-  input[type=number]:focus, input[type=text]:focus, select:focus{ border-color: var(--front); }
-  select{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%); background-position: calc(100% - 16px) center, calc(100% - 11px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+  /* Fix-it */
+  .phase-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .phase-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);
+    padding:8px 14px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .15s;}
+  .phase-btn[aria-pressed="true"]{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+  .sym{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+    padding:16px;margin-bottom:12px;}
+  .sym h4{font-size:15px;margin-bottom:4px;}
+  .sym .desc{font-size:12.6px;color:var(--muted);margin-bottom:11px;}
+  .sym ol{margin:0;padding-left:0;list-style:none;counter-reset:fix;}
+  .sym li{counter-increment:fix;font-size:13px;padding:7px 0 7px 30px;position:relative;
+    border-top:1px solid var(--border-soft);}
+  .sym li:before{content:counter(fix);position:absolute;left:0;top:7px;font-family:var(--mono);
+    font-size:10.5px;color:var(--faint);border:1px solid var(--border);border-radius:3px;
+    width:19px;height:19px;display:flex;align-items:center;justify-content:center;}
+  .sym li:first-child{border-top:none;}
+  .sym li b{color:var(--text);font-weight:600;}
+  .phase-tag{font-family:var(--mono);font-size:10.5px;color:var(--faint);}
 
-  .unit-toggle{ display:flex; border: 1px solid var(--border); border-radius: 6px; overflow:hidden; }
-  .unit-toggle button{
-    flex:1; background: var(--surface-2); border:none; color: var(--text-muted); padding: 9px 0; cursor:pointer; font-size: 12.5px;
-  }
-  .unit-toggle button.active{ background: var(--accent); color: var(--bg); font-weight:600; }
+  /* Build steps */
+  .step{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border-soft);
+    border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+  .step .n{font-family:var(--mono);font-size:12px;color:var(--faint);padding-top:2px;min-width:20px;}
+  .step h4{font-size:14.5px;margin-bottom:3px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .step p{margin:0;font-size:12.8px;color:var(--muted);line-height:1.55;}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:3px 7px;border-radius:3px;}
+  .pill.do{background:rgba(60,190,112,.14);color:var(--good);}
+  .pill.skip{background:var(--surface-2);color:var(--faint);}
+  .pill.key{background:var(--accent-soft);color:var(--accent);}
+  .step.skip{opacity:.62;}
 
-  .checkbox-field{ display:flex; align-items:center; gap:8px; font-size: 12.8px; color: var(--text-muted); margin-bottom: 13px; }
-  .checkbox-field input{ width:15px; height:15px; accent-color: var(--accent); }
-
-  .btn-primary{
-    width:100%; background: var(--accent); color: #fff; border:none; padding: 11px 0;
-    border-radius: 6px; font-family: var(--display); font-weight:700; font-size: 14.5px; letter-spacing: 0.03em;
-    cursor:pointer; margin-top: 6px; transition: filter .15s, transform .1s;
-  }
-  .btn-primary:hover{ filter: brightness(1.08); }
-  .btn-primary:active{ transform: scale(.99); }
-
-  fieldset{ border:none; padding:0; margin:0 0 16px; }
-  fieldset legend{ font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px; padding:0; font-weight:500; }
-
-  /* ---------- Results / class stripe ---------- */
-  .class-stripe{
-    display:flex; align-items:center; gap: 14px; padding: 13px 16px; border-radius: var(--radius);
-    background: var(--class-color-soft); border: 1px solid var(--class-color);
-    margin-bottom: 16px; transition: background .2s, border-color .2s;
-  }
-  .class-badge{
-    font-family: var(--mono); font-weight:700; font-size: 19px; color: var(--bg);
-    background: var(--class-color); width: 38px; height:38px; border-radius:6px;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0; transition: background .2s;
-  }
-  .class-stripe .ctext{ font-size: 12.8px; color: var(--text-muted); }
-  .class-stripe .ctext b{ color: var(--text); font-family: var(--display); font-size: 14px; }
-  .mech-balance{ margin-left:auto; text-align:right; font-size: 11px; color: var(--text-muted); }
-  .mech-balance .val{ font-family: var(--mono); font-size: 15px; color: var(--text); display:block; }
-
-  .cards-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 14px; }
-
-  .card{
-    background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 15px 16px;
-  }
-  .card h3{ font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px; display:flex; align-items:center; gap:8px;}
-  .card h3 .dot{ width:6px; height:6px; border-radius:50%; background: var(--accent); flex-shrink:0; }
-
-  .fr-row{ display:flex; gap: 10px; margin-bottom: 4px; }
-  .fr-chip{ flex:1; border-radius: 6px; padding: 8px 10px; background: var(--surface-2); }
-  .fr-chip.front{ border-left: 3px solid var(--front); }
-  .fr-chip.rear{ border-left: 3px solid var(--rear); }
-  .fr-chip .lbl{ font-size: 10.5px; color: var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; }
-  .fr-chip .val{ font-family: var(--mono); font-size: 17px; font-weight:600; color: var(--text); font-variant-numeric: tabular-nums; }
-  .fr-chip.front .val{ color: var(--front); }
-  .fr-chip.rear .val{ color: var(--rear); }
-  .fr-chip .unit{ font-size: 11px; color: var(--text-muted); font-weight:400; margin-left:3px; }
-
-  .single-val{ display:flex; align-items:baseline; gap:8px; margin-bottom: 4px;}
-  .single-val .val{ font-family: var(--mono); font-size: 20px; font-weight:600; color: var(--accent); font-variant-numeric: tabular-nums; }
-  .single-val .unit{ font-size: 12px; color: var(--text-muted); }
-
-  .why{ font-size: 11.8px; color: var(--text-muted); margin-top: 10px; line-height:1.5; }
-  .callout{
-    margin-top: 10px; padding: 8px 10px; background: rgba(224,71,61,0.1); border: 1px solid rgba(224,71,61,0.35);
-    border-radius: 6px; font-size: 11.8px; color: #F3A39D;
-  }
-  .na-note{ color: var(--text-faint); font-size: 12.5px; font-style: italic; }
-
-  .ladder{ display:flex; flex-wrap:wrap; gap: 6px; margin-top:2px; }
-  .ladder span{
-    font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); border:1px solid var(--border);
-    padding: 4px 8px; border-radius: 4px; color: var(--text);
-  }
-  .ladder span:first-child{ border-color: var(--front); color: var(--front); }
-  .ladder span:last-child{ border-color: var(--rear); color: var(--rear); }
-
-  /* ---------- Meta advisor ---------- */
-  .step-list{ display:flex; flex-direction:column; gap: 10px; }
-  .step{
-    display:flex; gap: 12px; background: var(--surface); border:1px solid var(--border-soft);
-    border-radius: var(--radius); padding: 13px 15px; align-items:flex-start;
-  }
-  .step .num{
-    font-family: var(--mono); font-size: 12px; color: var(--text-faint); flex-shrink:0; width:20px; padding-top:1px;
-  }
-  .step .pill{
-    flex-shrink:0; font-size: 10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
-    padding: 3px 7px; border-radius: 4px; margin-right: 4px;
-  }
-  .step.included .pill{ background: rgba(54,194,107,0.15); color: var(--good); }
-  .step.skip .pill{ background: var(--surface-2); color: var(--text-faint); }
-  .step.flagged{ border-color: rgba(224,71,61,0.4); background: rgba(224,71,61,0.05); }
-  .step .body{ flex:1; }
-  .step .body h4{ font-family: var(--display); font-size: 14.5px; margin: 0 0 4px; font-weight:600; }
-  .step .body p{ margin:0; font-size: 12.8px; color: var(--text-muted); line-height:1.5; }
-
-  .meta-table-wrap{ margin-top: 22px; }
-  .meta-table-wrap h2{ font-size: 14px; color: var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
-  table.meta-table{ width:100%; border-collapse: collapse; font-size: 12.6px; }
-  table.meta-table th, table.meta-table td{ text-align:left; padding: 8px 10px; border-bottom: 1px solid var(--border-soft); }
-  table.meta-table th{ color: var(--text-muted); font-weight:600; font-size: 11px; text-transform:uppercase; letter-spacing:0.04em; }
-  table.meta-table td{ color: var(--text); }
-  table.meta-table tr:hover td{ background: var(--surface); }
-
-  footer{ margin-top: 34px; border-top: 1px solid var(--border-soft); padding-top: 14px; }
-  footer p{ font-size: 11.5px; color: var(--text-faint); margin:0; }
-
-  @media (max-width: 480px){
-    .row2, .row3{ grid-template-columns: 1fr; }
-    .brand h1{ font-size: 18px; }
-  }
+  /* Notes tab */
+  .prose{max-width:74ch;}
+  .prose h3{font-size:17px;margin:26px 0 8px;}
+  .prose h3:first-child{margin-top:0;}
+  .prose p{font-size:13.6px;color:var(--muted);line-height:1.65;}
+  .prose ul{font-size:13.6px;color:var(--muted);line-height:1.65;padding-left:18px;}
+  .prose li{margin-bottom:7px;}
+  .prose b{color:var(--text);font-weight:600;}
+  table{width:100%;border-collapse:collapse;font-size:12.8px;margin-top:10px;}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--border-soft);vertical-align:top;}
+  th{color:var(--faint);font-weight:500;font-size:11.5px;letter-spacing:.04em;}
+  td{color:var(--muted);}
+  td b{color:var(--text);}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <div class="topbar">
+  <header class="topbar">
     <div class="brand">
-      <span class="brand-mark">FH6</span>
+      <span class="mark">FH6</span>
       <div>
         <h1>Setup Sheet</h1>
-        <div class="sub">Road &amp; circuit tuning calculator — Japan, tarmac only</div>
+        <div class="sub">A tuning calculator built around Forza Horizon 6's Mechanical Balance readout</div>
       </div>
     </div>
-    <button class="info-toggle" id="infoToggle">What do these formulas assume?</button>
+    <span class="verchip" id="verchip">rev 2 · FH6 physics</span>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="tune">Setup sheet</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="fix">Fix it</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="build">Build order</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="notes">Method &amp; sources</button>
   </div>
 
-  <div class="info-panel" id="infoPanel" hidden>
-    <strong>Turn 10 / Playground Games have never published the game's internal physics formulas.</strong>
-    This version's formulas come from a personal road/touge tuning guide: springs are a % of the
-    slider's (Max−Min) range scaled by corner weight (front softer, rear stiffer, for sharp turn-in
-    on tight street corners and mountain passes), ARBs target a deliberately soft front (5–8) and
-    stiff rear (40–50), damping uses Rebound at 60–70% of the max slider with Bump at 35–40% of
-    that Rebound value, and AWD differential locks Rear Accel at 100% with a strong rear Center
-    Bias. Front toe is set toe-OUT on purpose — that's what gives the instant turn-in this layout
-    is built for. Treat every number as a confident starting point, then trim from in-game telemetry
-    and feel. The low-pressure tire "meta" (~16 psi) is a deliberate contact-patch exploit, not a
-    feel-first recommendation — it's flagged as such when enabled. Covers tarmac road and circuit
-    racing only — no drift, drag, dirt, or cross-country logic.
-  </div>
+  <!-- ===================== SETUP SHEET ===================== -->
+  <section class="panel-tab active" id="tab-tune">
+    <div class="layout">
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="calc">Tuning Calculator</button>
-    <button class="tab" data-tab="meta">Class Meta Advisor</button>
-  </nav>
+      <form class="panel" id="carForm">
+        <h2>The car</h2>
 
-  <main>
-    <!-- ===================== CALCULATOR TAB ===================== -->
-    <section class="tab-panel active" id="calc-tab">
-      <div class="layout">
+        <div class="field">
+          <label for="discipline">What you're racing</label>
+          <select id="discipline">
+            <option value="touge">Touge / mountain roads</option>
+            <option value="road" selected>Road circuit / street</option>
+            <option value="dirt">Dirt rally</option>
+            <option value="cross">Cross country</option>
+            <option value="drift">Drift</option>
+            <option value="drag">Drag</option>
+          </select>
+          <div class="hint">This drives almost everything. Road and dirt want opposite setups.</div>
+        </div>
 
-        <form class="panel form-panel" id="calcForm">
-          <h2>Car &amp; setup inputs</h2>
-
-          <div class="field">
-            <label for="weight">Car weight</label>
-            <div class="row2">
-              <input type="number" id="weight" value="3400" min="1000" max="6000" required>
-              <div class="unit-toggle" id="unitToggle">
-                <button type="button" class="active" data-unit="lb">lb</button>
-                <button type="button" data-unit="kg">kg</button>
-              </div>
+        <div class="field">
+          <label for="weight">Weight</label>
+          <div class="row2">
+            <input type="number" id="weight" value="3100" min="400" step="10">
+            <div class="toggle" id="wUnit">
+              <button type="button" data-u="lb" aria-pressed="true">lb</button>
+              <button type="button" data-u="kg" aria-pressed="false">kg</button>
             </div>
           </div>
+        </div>
 
+        <div class="row2">
           <div class="field">
-            <label for="enginePos">Engine position</label>
-            <select id="enginePos">
-              <option value="Front" selected>Front-engine</option>
-              <option value="Mid">Mid-engine</option>
-              <option value="Rear">Rear-engine</option>
-            </select>
-            <div class="field-hint">Used to auto-fill weight distribution and trail-braking bias.</div>
+            <label for="frontPct">Front weight %</label>
+            <input type="number" id="frontPct" value="53" min="25" max="75" step="0.5">
           </div>
-
           <div class="field">
-            <label for="frontWeight">Weight distribution, % front <span style="color:var(--text-faint)">(optional override)</span></label>
-            <input type="number" id="frontWeight" placeholder="auto from engine position" min="30" max="70" step="0.5">
+            <label for="power">Power (hp)</label>
+            <input type="number" id="power" value="450" min="40" step="5">
           </div>
+        </div>
+        <div class="hint" style="margin:-6px 0 12px">Both are on the upgrade screen. Front weight % sets the spring and ARB split; power sets the final drive.</div>
 
+        <div class="row2">
           <div class="field">
             <label for="drivetrain">Drivetrain</label>
             <select id="drivetrain">
-              <option value="FWD">FWD</option>
-              <option value="RWD" selected>RWD</option>
-              <option value="AWD">AWD</option>
+              <option>RWD</option><option selected>AWD</option><option>FWD</option>
             </select>
           </div>
+          <div class="field">
+            <label for="enginePos">Engine</label>
+            <select id="enginePos">
+              <option selected>Front</option><option>Mid</option><option>Rear</option>
+            </select>
+          </div>
+        </div>
 
+        <div class="row2">
           <div class="field">
             <label for="compound">Tire compound</label>
             <select id="compound">
-              <option value="Stock">Stock</option>
-              <option value="Street">Street</option>
-              <option value="Sport" selected>Sport</option>
-              <option value="Semi-slick">Semi-slick</option>
-              <option value="Race">Race slick</option>
-              <option value="Rally">Rally</option>
+              <option>Stock</option><option>Street</option><option selected>Sport</option>
+              <option>Semi-slick</option><option>Race slick</option><option>Rally</option>
+              <option>Off-road</option><option>Drift</option><option>Snow</option>
             </select>
           </div>
-
-          <label class="checkbox-field">
-            <input type="checkbox" id="useMetaPressure">
-            Use low-pressure contact-patch meta (~16 psi / 1.1 BAR) instead of standard pressures
-          </label>
-
-          <label class="checkbox-field">
-            <input type="checkbox" id="nightCold">
-            Cool / nighttime street race — drop cold pressure -1.5 PSI
-          </label>
-
           <div class="field">
-            <label for="piClass">PI class</label>
+            <label for="piClass">Class</label>
             <select id="piClass">
-              <option value="D">D — ≤500</option>
-              <option value="C">C — 501–600</option>
-              <option value="B" selected>B — 601–700</option>
-              <option value="A">A — 701–800</option>
-              <option value="S1">S1 — 801–900</option>
-              <option value="S2">S2 — 901–998</option>
-              <option value="R">R — 999+</option>
+              <option>D</option><option>C</option><option>B</option><option selected>A</option>
+              <option>S1</option><option>S2</option><option>R</option><option>X</option>
             </select>
-          </div>
-
-          <div class="field">
-            <label for="brakingStyle">Braking style</label>
-            <select id="brakingStyle">
-              <option value="Stability-first" selected>Stability-first</option>
-              <option value="Trail-braking">Trail-braking</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="balance">Cornering balance preference</label>
-            <select id="balance">
-              <option value="Neutral" selected>Neutral</option>
-              <option value="Safer">Safer (understeer-biased)</option>
-              <option value="Aggressive">Aggressive (oversteer-biased)</option>
-            </select>
-          </div>
-
-          <fieldset>
-            <legend>ARB slider range, as shown in-game (optional)</legend>
-            <div class="row2">
-              <input type="number" id="arbMin" placeholder="Min">
-              <input type="number" id="arbMax" placeholder="Max">
-            </div>
-            <div class="field-hint">Leave blank for a normalized 0–65 raw output you can rescale.</div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Spring rate slider range, as shown in-game (optional)</legend>
-            <div class="row2">
-              <input type="number" id="springMin" placeholder="Min (e.g. 80)">
-              <input type="number" id="springMax" placeholder="Max (e.g. 1100)">
-            </div>
-            <div class="field-hint">This is what was making setups too stiff before — enter your car's actual slider range for an accurate result.</div>
-          </fieldset>
-
-          <div class="row2">
-            <div class="field">
-              <label for="topSpeed">Top speed target (mph)</label>
-              <input type="number" id="topSpeed" placeholder="auto by class">
-            </div>
-            <div class="field">
-              <label for="numGears">Gears</label>
-              <input type="number" id="numGears" value="6" min="4" max="9">
-            </div>
-          </div>
-
-          <div class="row2">
-            <div class="field">
-              <label for="peakRPM">Peak power RPM <span style="color:var(--text-faint)">(optional)</span></label>
-              <input type="number" id="peakRPM" placeholder="e.g. 6500" min="1000" max="13000">
-            </div>
-            <div class="field">
-              <label for="redlineRPM">Redline RPM <span style="color:var(--text-faint)">(optional)</span></label>
-              <input type="number" id="redlineRPM" placeholder="e.g. 7500" min="1000" max="13000">
-            </div>
-          </div>
-          <div class="field-hint" style="margin-top:-8px; margin-bottom:13px">Leave both blank for the standard even-percentage curve. Fill both in if you know your engine's power/torque graph — a narrow powerband (peak close to redline) will tighten the top-gear spacing slightly.</div>
-
-          <label class="checkbox-field">
-            <input type="checkbox" id="brakesUpgraded">
-            Brakes already upgraded at least one tier
-          </label>
-
-          <button type="submit" class="btn-primary">Calculate setup</button>
-        </form>
-
-        <div class="results">
-          <div class="class-stripe" id="classStripe">
-            <div class="class-badge" id="classBadge">B</div>
-            <div class="ctext">PI class <b id="classLabel">B — 601–700</b><br>Tarmac road &amp; circuit setup</div>
-          </div>
-          <div class="cards-grid" id="cardsGrid"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== META ADVISOR TAB ===================== -->
-    <section class="tab-panel" id="meta-tab">
-      <div class="layout">
-
-        <form class="panel form-panel" id="metaForm">
-          <h2>Upgrade plan</h2>
-
-          <div class="field">
-            <label for="currentClass">Current class</label>
-            <select id="currentClass">
-              <option value="D" selected>D — ≤500</option>
-              <option value="C">C — 501–600</option>
-              <option value="B">B — 601–700</option>
-              <option value="A">A — 701–800</option>
-              <option value="S1">S1 — 801–900</option>
-              <option value="S2">S2 — 901–998</option>
-              <option value="R">R — 999+</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="targetClass">Target class</label>
-            <select id="targetClass">
-              <option value="D">D — ≤500</option>
-              <option value="C" selected>C — 501–600</option>
-              <option value="B">B — 601–700</option>
-              <option value="A">A — 701–800</option>
-              <option value="S1">S1 — 801–900</option>
-              <option value="S2">S2 — 901–998</option>
-              <option value="R">R — 999+</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="currentDrivetrain">Current drivetrain <span style="color:var(--text-faint)">(optional)</span></label>
-            <select id="currentDrivetrain">
-              <option value="">Unknown / skip drivetrain advice</option>
-              <option value="FWD">FWD</option>
-              <option value="RWD">RWD</option>
-              <option value="AWD">AWD</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn-primary">Get upgrade priority</button>
-        </form>
-
-        <div class="results">
-          <div class="step-list" id="stepList"></div>
-
-          <div class="meta-table-wrap">
-            <h2>Class meta reference</h2>
-            <table class="meta-table">
-              <thead><tr><th>Class</th><th>PI range</th><th>Tire meta</th><th>Drivetrain meta</th><th>Focus</th></tr></thead>
-              <tbody id="metaTableBody"></tbody>
-            </table>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <footer>
-    <p>Road/touge formulas sourced from a personal Forza Horizon 6 tuning guide. Turn 10 / Playground Games have never published official physics formulas for Forza Horizon 6 — use these as a confident starting point, then fine-tune from in-game telemetry.</p>
-  </footer>
+        <div class="field">
+          <label for="brakingStyle">How you brake</label>
+          <select id="brakingStyle">
+            <option value="stability" selected>Finish braking before turn-in</option>
+            <option value="trail">Trail-brake into the corner</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="balance">Balance preference</label>
+          <select id="balance">
+            <option value="safer">Safer — stable, forgiving</option>
+            <option value="neutral" selected>Neutral</option>
+            <option value="rotational">Rotational — sharper, looser</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <fieldset>
+          <legend>Spring slider range (from the tune menu — optional)</legend>
+          <div class="row3">
+            <input type="number" id="springMin" placeholder="Min" step="0.1">
+            <input type="number" id="springMax" placeholder="Max" step="0.1">
+            <select id="springUnit">
+              <option value="kgf">kgf/mm</option>
+              <option value="lbin">lb/in</option>
+            </select>
+          </div>
+          <div class="hint">Leave blank to get slider positions as a percentage instead of absolute rates.</div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Gearbox</legend>
+          <div class="row2">
+            <input type="number" id="numGears" value="6" min="3" max="10" placeholder="Gears">
+            <input type="number" id="aeroLevel" value="0" min="0" max="3" placeholder="Aero 0–3">
+          </div>
+          <div class="hint">Aero: 0 = none, 1 = light, 2 = moderate, 3 = max downforce. Affects final drive.</div>
+        </fieldset>
+      </form>
+
+      <div>
+        <div class="mech">
+          <div class="mech-top">
+            <div>
+              <h2>Mechanical Balance is the target, not the sliders</h2>
+              <p id="mechIntro"></p>
+            </div>
+          </div>
+
+          <div class="gauge">
+            <div class="gauge-track">
+              <div class="gauge-zone" style="left:0;width:37.5%;color:#C98B84">understeer</div>
+              <div class="gauge-zone" style="left:37.5%;width:25%;color:#7FD6A0">target</div>
+              <div class="gauge-zone" style="left:62.5%;width:37.5%;color:#C98B84">loose</div>
+              <div class="gauge-sweet" title="0.60"></div>
+            </div>
+            <div class="gauge-scale"><span>0.40</span><span>0.50</span><span>0.60</span><span>0.70</span><span>0.80</span></div>
+          </div>
+
+          <div class="mech-steps">
+            <div class="mstep"><b>1 · Start stiff</b><span id="mechS1"></span></div>
+            <div class="mstep"><b>2 · Soften the bad end</b><span>Understeer → soften the front bar. Loose rear → soften the rear bar. Never stiffen the opposite end to compensate.</span></div>
+            <div class="mstep"><b>3 · Stop at 0.55–0.65</b><span>Then leave the bars alone. Fix whatever's left with springs, dampers and the diff.</span></div>
+          </div>
+        </div>
+
+        <div class="grid" id="cards"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FIX IT ===================== -->
+  <section class="panel-tab" id="tab-fix">
+    <p class="hint" style="font-size:13.2px;max-width:70ch;margin:0 0 16px">
+      Drive a few laps, work out <b style="color:var(--text)">where in the corner</b> the car misbehaves, then pick the matching card.
+      Fixes are ordered most-effective first. Change one thing, drive again, and only move down the list if it didn't help.
+    </p>
+    <div class="phase-row" id="phaseRow"></div>
+    <div id="symptoms"></div>
+  </section>
+
+  <!-- ===================== BUILD ORDER ===================== -->
+  <section class="panel-tab" id="tab-build">
+    <div class="layout">
+      <form class="panel" id="buildForm">
+        <h2>Where you're starting</h2>
+        <div class="field">
+          <label for="curClass">Current class</label>
+          <select id="curClass"><option>D</option><option selected>B</option><option>C</option><option>A</option><option>S1</option><option>S2</option><option>R</option></select>
+        </div>
+        <div class="field">
+          <label for="tgtClass">Target class</label>
+          <select id="tgtClass"><option>D</option><option>C</option><option>B</option><option selected>A</option><option>S1</option><option>S2</option><option>R</option><option>X</option></select>
+        </div>
+        <div class="field">
+          <label for="bDrivetrain">Current drivetrain</label>
+          <select id="bDrivetrain"><option value="">Not sure</option><option>RWD</option><option>AWD</option><option>FWD</option></select>
+        </div>
+        <div class="field">
+          <label for="bDiscipline">Discipline</label>
+          <select id="bDiscipline">
+            <option value="road" selected>Road / touge</option>
+            <option value="dirt">Dirt / cross country</option>
+            <option value="drift">Drift</option>
+            <option value="drag">Drag</option>
+          </select>
+        </div>
+      </form>
+      <div id="buildSteps"></div>
+    </div>
+  </section>
+
+  <!-- ===================== NOTES ===================== -->
+  <section class="panel-tab" id="tab-notes">
+    <div class="prose" id="notes"></div>
+  </section>
+
 </div>
 
 <script>
+"use strict";
+
 /* =========================================================================
-   ENGINE — pure calculation functions, one per subsystem
+   FH6 SETUP SHEET — tuning engine
+   -------------------------------------------------------------------------
+   Every number below traces to a published FH6 guide. Where guides disagree
+   (and several do), the code uses the overlap of the ranges and the card
+   shows the full band so you can see the disagreement rather than trusting
+   a single invented number. See the "Method & sources" tab.
    ========================================================================= */
-const CLASSES = ["D","C","B","A","S1","S2","R"];
-const CLASS_LABELS = { D:"D — ≤500", C:"C — 501–600", B:"B — 601–700", A:"A — 701–800", S1:"S1 — 801–900", S2:"S2 — 901–998", R:"R — 999+" };
-const CLASS_COLORS = { D:"#B5B9C0", C:"#36C26B", B:"#2F8FE0", A:"#B25CE0", S1:"#F2A93C", S2:"#E0473D", R:"#D8B14A" };
-const classIndex = c => CLASSES.indexOf(c);
-const round = (n, d=2) => { const f = Math.pow(10,d); return Math.round(n*f)/f; };
 
-/* ---------------- 1. TIRES (DYNAMIC WEIGHT-SCALED FORMULA) ---------------- */
-const TIRE_BASE_COMPOUND = {
-  Stock: 27.0,
-  Street: 27.0,
-  Sport: 29.0,
-  "Semi-slick": 30.25,
-  Race: 32.25,
-  Rally: 29.0
+const round = (n, d = 1) => { const f = 10 ** d; return Math.round(n * f) / f; };
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const even  = n => Math.round(n / 2) * 2;          // FH6 diff accel moves in 2% steps
+const LB_PER_KG = 2.20462;
+
+const DISCIPLINES = {
+  touge: { label:"Touge",         road:true },
+  road:  { label:"Road circuit",  road:true },
+  dirt:  { label:"Dirt rally",    road:false },
+  cross: { label:"Cross country", road:false },
+  drift: { label:"Drift",         road:true },
+  drag:  { label:"Drag",          road:true },
 };
-const TIRE_HOT_TARGET = { Stock: 31, Street: 32.5, Sport: 32.5, "Semi-slick": 33.5, Race: 34, Rally: 27 };
-const META_PSI = 16;
 
-function tirePressure({ compound, drivetrain, useMeta, nightCold, weightLbs, enginePos }){
-  // 1. Base pressure by compound
-  const basePressure = TIRE_BASE_COMPOUND[compound] ?? 29.0;
+/* ---------- 1. Tires ------------------------------------------------------
+   FH6 changed this. Pressure is a responsiveness dial, not a thermal one, and
+   grip ceiling comes from compound + width instead of an ideal pressure.
+   Targets are HOT pressures. Lower = more grip + slower response.
+-------------------------------------------------------------------------- */
+const TIRE_BAND = {                       // [frontLo, frontHi, rearLo, rearHi] hot psi
+  touge:[30,32,30,32], road:[28,32,28,32], dirt:[26,28,26,28],
+  cross:[22,26,22,26], drift:[30,32,35,40], drag:[32,36,20,25],
+};
+const BAND_LABEL = {
+  touge:"30–32", road:"28–32", dirt:"26–28",
+  cross:"22–26", drift:"F 30–32 / R 35–40", drag:"F 32–36 / R 20–25",
+};
+// Where a compound sits inside the band. Stiffer sidewalls want more air.
+const COMPOUND_POS = {
+  "Stock":0.15, "Street":0.25, "Sport":0.45, "Semi-slick":0.68, "Race slick":0.9,
+  "Rally":0.3, "Off-road":0.08, "Drift":0.6, "Snow":0.25,
+};
 
-  // 2. Weight scaler — every 500 lb over/under a 2500 lb reference car adds/removes ~1.1 psi,
-  //    with a diminishing multiplier above 3,500 lb so heavy trucks/SUVs taper off instead of spiking
-  let weightScaler = 0;
-  if (weightLbs > 0){
-    const baseWeightDiff = (weightLbs - 2500) / 500;
-    let dynamicMultiplier = 1.1;
-    if (weightLbs > 3500){
-      dynamicMultiplier = 1.1 / (1 + (weightLbs - 3500) * 0.0002);
-    }
-    weightScaler = baseWeightDiff * dynamicMultiplier;
-  }
+function tires({ compound, discipline, weightLb, frontPct }){
+  const [fLo, fHi, rLo, rHi] = TIRE_BAND[discipline];
 
-  // 3. Drivetrain / layout tweak (front-biased split)
-  let frontTweak = 0.5; // default light front bias
-  if (drivetrain === "FWD") frontTweak = 1.0;
-  else if (drivetrain === "RWD") frontTweak = 0.5;
-  else if (drivetrain === "AWD" || enginePos === "Mid") frontTweak = 0.4;
-  const rearTweak = 0;
-
-  let stdFront = basePressure + weightScaler + frontTweak;
-  let stdRear = basePressure + weightScaler + rearTweak;
-
-  // 4. Hard safety cap — cold pressure never exceeds the natural telemetry sweet spot
-  const ABSOLUTE_MAX_PSI = 36.0;
-  if (stdFront > ABSOLUTE_MAX_PSI) stdFront = ABSOLUTE_MAX_PSI;
-  if (stdRear > ABSOLUTE_MAX_PSI) stdRear = ABSOLUTE_MAX_PSI;
-
-  if (nightCold){
-    stdFront -= 1.5;
-    stdRear -= 1.5;
-  }
-
-  stdFront = round(stdFront, 1);
-  stdRear = round(stdRear, 1);
+  // Compound sets the position in the band; weight and axle load trim it.
+  let p = COMPOUND_POS[compound] ?? 0.45;
+  p += clamp((weightLb - 3200) / 2400, -0.18, 0.28);
+  const split = clamp((frontPct - 50) * 0.008, -0.1, 0.1);
 
   return {
-    standard: { front: stdFront, rear: stdRear, band: "Dynamic (weight-scaled)", hotTarget: TIRE_HOT_TARGET[compound] },
-    meta: { front: META_PSI, rear: META_PSI },
-    useMeta: !!useMeta,
-    active: useMeta ? { front: META_PSI, rear: META_PSI } : { front: stdFront, rear: stdRear },
+    front: round(fLo + (fHi - fLo) * clamp(p + split, 0, 1), 1),
+    rear:  round(rLo + (rHi - rLo) * clamp(p - split, 0, 1), 1),
+    band: BAND_LABEL[discipline],
   };
 }
 
-/* ---------------- 2. ALIGNMENT (WEIGHT-DISTRIBUTION-SCALED CAMBER) ---------------- */
-function alignment({ piClass, weightLbs, balance, frontWeightPct }){
-  const frontFrac = frontWeightPct / 100;
-  const rearFrac = 1 - frontFrac;
+/* ---------- 2. Alignment -------------------------------------------------- */
+const CAMBER_BASE = {                     // [front, rear] degrees, negative
+  touge:[-1.3,-1.0], road:[-1.4,-1.0], dirt:[-1.0,-0.7],
+  cross:[-0.5,-0.5], drift:[-5.0,-1.0],  drag:[-0.3, 0.2],
+};
+const CASTER_BASE = { touge:6.5, road:6.5, dirt:5.5, cross:2.5, drift:7.0, drag:7.0 };
 
-  // Dynamic camber based on how much rolling load leans onto each contact patch
-  let camberFront = -(0.8 + (frontFrac * 1.2));
-  let camberRear = -(0.5 + (rearFrac * 1.0));
+function alignment({ discipline, drivetrain, weightLb, compound, balance }){
+  let [cf, cr] = CAMBER_BASE[discipline];
 
-  if (balance === "Aggressive") camberFront -= 0.2;
-  else if (balance === "Safer") camberFront += 0.2;
+  if (DISCIPLINES[discipline].road && discipline !== "drift" && discipline !== "drag"){
+    // Stickier rubber carries more camber before the inner edge starts costing you.
+    if (compound === "Race slick")   { cf -= 0.35; cr -= 0.25; }
+    else if (compound === "Semi-slick"){ cf -= 0.2; cr -= 0.15; }
+    else if (compound === "Stock" || compound === "Street"){ cf += 0.25; cr += 0.2; }
 
-  camberFront = round(camberFront, 1);
-  camberRear = round(camberRear, 1);
+    // Which axle steers decides which axle wants the extra camber.
+    if (drivetrain === "RWD") cf -= 0.15;
+    else if (drivetrain === "FWD") cr -= 0.25;
 
-  let caster = weightLbs < 2600 ? 5.5 : 6.8;
-  let toeFront = 0.15;  
-  let toeRear = -0.1;
-  if (balance === "Aggressive") toeFront = 0.2;  
-  if (balance === "Safer") toeFront = 0.1;       
-  return { camberFront, camberRear, caster, toeFront, toeRear };
-}
-
-/* ---------------- 3. SPRINGS (FIXED: WEIGHT-PROPORTIONAL DIRECTION BUG) ---------------- */
-const SPRING_RANGE = { Min: 80, Max: 1100 }; 
-// Fixed soft-front / stiff-rear bias, same intent as the ARB base targets
-// (6.5 vs 45 out of 65) below. Previously rate was scaled directly
-// proportional to corner weight fraction, which meant whichever axle
-// carried more weight came out STIFFER — for a typical front-engine car
-// (54% front) that put the front spring stiffer than the rear, the
-// opposite of the road/touge "soft front, stiff rear" design this
-// calculator documents everywhere else (ARB, alignment, damping notes).
-const SPRING_FRONT_BASE_FRAC = 0.42;
-const SPRING_REAR_BASE_FRAC = 0.58;
-
-function springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, springMax }){
-  const min = springMin ?? SPRING_RANGE.Min;
-  const max = springMax ?? SPRING_RANGE.Max;
-  const range = max - min;
-
-  const frontWeightFrac = frontWeightPct / 100;
-  const rearWeightFrac = 1 - frontWeightFrac;
-
-  // Weight distribution nudges the split around the fixed soft-front/
-  // stiff-rear bias rather than flipping its direction. An axle carrying
-  // more weight gets relatively firmer (closer to the other axle), but a
-  // realistic front weight split (up to ~63% front) never overturns the
-  // rear-stiffer bias, matching the ARB/damping direction this setup relies on.
-  const weightSkew = frontWeightFrac - 0.5; // e.g. +0.04 for a 54% front car
-  const frontFrac = Math.min(0.95, Math.max(0.05, SPRING_FRONT_BASE_FRAC + weightSkew * 0.6));
-  const rearFrac = Math.min(0.95, Math.max(0.05, SPRING_REAR_BASE_FRAC - weightSkew * 0.6));
-
-  // Linear slider interpolation using the soft-front/stiff-rear split above
-  let rateFront = (range * frontFrac) + min;
-  let rateRear = (range * rearFrac) + min;
-
-  // Apply target cornering balance preference multipliers safely
-  if (balance === "Aggressive") {
-    rateFront *= 0.96; // Softer front yields sharper turn-in
-    rateRear *= 1.04;  // Stiffer rear encourages clean rotation
-  } else if (balance === "Safer") {
-    rateFront *= 1.04; 
-    rateRear *= 0.96;  
+    if (balance === "rotational") cr += 0.15;   // less rear grip, more rotation
+    else if (balance === "safer") cr -= 0.15;
   }
 
-  let drivetrainNote = "AWD — Formula output used directly.";
-  if (drivetrain === "RWD") { 
-    rateRear *= 1.04; 
-    drivetrainNote = "RWD — Rear spring rates stiffened +4% to handle corner-exit squats."; 
-  }
-  if (drivetrain === "FWD") { 
-    rateFront *= 1.03; 
-    drivetrainNote = "FWD — Front spring rates stiffened +3% to support braking & traction loads."; 
+  let caster = CASTER_BASE[discipline];
+  if (DISCIPLINES[discipline].road && weightLb < 2600) caster -= 0.5;   // light cars get twitchy at 7
+  if (weightLb > 4000) caster += 0.3;
+
+  // Toe stays at zero unless the car has a problem nothing else fixed.
+  let toeF = 0, toeR = 0, toeNote =
+    "Leave both at 0.00°. Any toe scrubs the tires on straights and costs top speed.";
+  if (discipline === "drift"){
+    toeF = 1.0; toeR = -0.15;
+    toeNote = "Drift is the exception: big front toe-out for a livelier front end, a touch of rear toe-in to stop the slide snapping.";
+  } else if (drivetrain === "FWD"){
+    toeNote = "Start at 0.00°. If the front still hesitates on turn-in after ARBs and camber, add +0.1° front toe-out.";
+  } else if (drivetrain === "RWD"){
+    toeNote = "Start at 0.00°. If the rear still snaps on throttle after the diff and ARBs, add −0.1 to −0.2° rear toe-in.";
   }
 
   return {
-    rateFront: round(rateFront, 1), 
-    rateRear: round(rateRear, 1),
-    cwFront: round(weightLbs * frontWeightFrac / 2, 1), 
-    cwRear: round(weightLbs * rearWeightFrac / 2, 1),
-    drivetrainNote,
-    rangeUsed: { min, max },
+    camberFront: round(cf,1), camberRear: round(cr,1),
+    caster: round(clamp(caster, 2.0, 7.0), 1),
+    toeFront: toeF, toeRear: toeR, toeNote,
+    casterBand: DISCIPLINES[discipline].road ? "5.5–7.0" : "2.0–5.5",
   };
 }
 
-/* ---------------- 4. ARB (FIXED: IGNORING CAR WEIGHT BUG) ---------------- */
-const ARB_DIRECTION_NOTE = {
-  AWD: "Soft front handles tight corners cleanly, stiff rear balances power delivery across axles.",
-  RWD: "Soft front forces sharper rotation; stiff rear controls oversteer progression on-throttle.",
-  FWD: "Front ARB scales slightly higher to maintain front track width; rear acts as main roll stabilizer.",
+/* ---------- 3. Springs & ride height -------------------------------------
+   Absolute rates are close to meaningless in FH6 (the slider floor sits above
+   what real cars run). What matters is (a) where on the slider you sit, set by
+   surface, and (b) the front/rear ratio, set by weight distribution.
+-------------------------------------------------------------------------- */
+const SPRING_STIFF = { touge:0.58, road:0.72, dirt:0.30, cross:0.10, drift:0.52, drag:0.40 };
+const SPRING_SURFACE_NOTE = {
+  touge:"Mid-stiff. Tokyo seams, crests and painted curbs need some compliance you don't need on a smooth circuit.",
+  road:"Upper third of the slider. Smooth tarmac rewards low roll and sharp response.",
+  dirt:"Lower third. On loose surfaces compliance is grip — stiff springs skip the car across the stage.",
+  cross:"At or near minimum. The only job is surviving ruts and landings with travel left.",
+  drift:"Mid, close to matched front/rear. Predictability matters more than pace.",
+  drag:"Soft rear, firmer front, to throw weight backwards on launch.",
 };
-const ARB_ENGINE_NOTE = {
-  Front: "Front-Engine — Front bias makes a softer front ARB highly safe to maximize front tire grip.",
-  Mid: "Mid-Engine — Centered mass lets you lean closer into the sweet spot of both roll stiffness bands.",
-  Rear: "Rear-Engine — Keep front ARB explicitly soft to prevent entry understeer; do not maximize rear rigidity.",
-};
 
-function arbCalc({ piClass, frontWeightPct, arbMin, arbMax, drivetrain, enginePos, weightLbs }){
-  const hasRange = arbMin !== null && arbMin !== "" && arbMax !== null && arbMax !== "" && !isNaN(arbMin) && !isNaN(arbMax);
-  const min = hasRange ? Number(arbMin) : 0;
-  const max = hasRange ? Number(arbMax) : 65;
-  const range = max - min;
+function springs({ discipline, weightLb, frontPct, drivetrain, springMin, springMax, springUnit }){
+  let base = SPRING_STIFF[discipline];
 
-  // Weight normalization scale based on a balanced 3,200 lb chassis
-  const weightFactor = weightLbs / 3200;
-  const frontWeightFrac = frontWeightPct / 100;
-  const rearWeightFrac = 1 - frontWeightFrac;
+  // Ratio follows weight distribution, but damped: a 60/40 car wants its front
+  // roughly 12% stiffer, not 50% stiffer.
+  const skew = (frontPct - 50) / 100 * 0.6;
+  let fFrac = base * (1 + skew);
+  let rFrac = base * (1 - skew);
 
-  // Base mechanical targets scaled directly against vehicle mass metrics
-  let baseFront = 6.5 * weightFactor * (frontWeightFrac / 0.5);
-  let baseRear = 45 * weightFactor * (rearWeightFrac / 0.5);
+  if (discipline === "drag"){ fFrac = base * 1.35; rFrac = base * 0.6; }
+  if (discipline === "drift"){ fFrac = base * 1.08; rFrac = base * 0.92; }
 
-  const clampArb = (v) => Math.min(max, Math.max(min + (range * 0.05), v));
+  // Drivetrain trim: the driven axle carries the squat.
+  if (drivetrain === "RWD" && DISCIPLINES[discipline].road) rFrac *= 1.02;
+  if (drivetrain === "FWD" && DISCIPLINES[discipline].road) fFrac *= 1.02;
 
-  // Transform raw targets onto the game's actual upgrade slider range
-  let arbFront = clampArb(min + ((baseFront / 65) * range));
-  let arbRear = clampArb(min + ((baseRear / 65) * range));
+  fFrac = clamp(fFrac, 0.05, 0.98);
+  rFrac = clamp(rFrac, 0.05, 0.98);
 
-  let frontLow = clampArb(min + (((5 * weightFactor) / 65) * range));
-  let frontHigh = clampArb(min + (((8 * weightFactor) / 65) * range));
-  let rearLow = clampArb(min + (((40 * weightFactor) / 65) * range));
-  let rearHigh = clampArb(min + (((50 * weightFactor) / 65) * range));
-
-  return {
-    isRaw: !hasRange,
-    front: round(arbFront, 1), 
-    rear: round(arbRear, 1),
-    frontBand: [round(frontLow, 1), round(frontHigh, 1)], 
-    rearBand: [round(rearLow, 1), round(rearHigh, 1)],
-    directionNote: ARB_DIRECTION_NOTE[drivetrain],
-    engineNote: ARB_ENGINE_NOTE[enginePos],
-  };
-}
-
-/* ---------------- 5. DAMPING (FIXED: REAR UNDER-DAMPING SLIDER BUG) ---------------- */
-const DAMPING_MAX_SLIDER = 14; 
-
-function damping({ rateFront, rateRear, frontWeightPct, dampingMax }){
-  const max = dampingMax ?? DAMPING_MAX_SLIDER;
-  const clamp = v => Math.min(max, Math.max(1.5, v));
-
-  // Rebound damping's job is to control the ACTUAL spring it's paired with —
-  // a stiffer spring stores/returns more energy and needs more rebound to
-  // keep from pinging back, regardless of how much static weight that
-  // corner carries. Previously this split was computed purely from corner
-  // weight fraction, ignoring drivetrain/balance spring adjustments (e.g.
-  // RWD's +4% rear stiffening). That left a stiffened rear spring relatively
-  // UNDER-damped, which shows up as a slight rear pogo/float and inconsistent
-  // corner-exit traction — most noticeable on front-engine RWD cars where the
-  // weight split (front-heavy) and the spring stiffening (rear-heavy) pull
-  // in opposite directions. Falls back to weight fraction only if rates are
-  // unavailable (e.g. zero).
-  const totalRate = rateFront + rateRear;
-  const frontWeightFrac = frontWeightPct / 100;
-  const frontRateFrac = totalRate > 0 ? rateFront / totalRate : frontWeightFrac;
-  const rearRateFrac = 1 - frontRateFrac;
-
-  // Scale rebound frequencies independently based on each axle's actual spring rate share
-  const reboundFront = round(clamp(max * 0.65 * frontRateFrac * 2), 1);
-  const reboundRear = round(clamp(max * 0.65 * rearRateFrac * 2), 1);
-
-  // Bump damping tracks precisely at 38% of their relative rebound values
-  const bumpFront = round(clamp(reboundFront * 0.38), 1);
-  const bumpRear = round(clamp(reboundRear * 0.38), 1);
-
-  return {
-    reboundFront, bumpFront, reboundRear, bumpRear,
-    pctDiff: round(Math.abs(rateRear - rateFront) / rateFront * 100, 1),
-    rearStiffer: rateRear >= rateFront,
-    reboundBand: [round(max * 0.60, 1), round(max * 0.70, 1)],
-  };
-}
-
-/* ---------------- 6. BRAKES ---------------- */
-const BRAKE_BASE = {
-  AWD: { "Stability-first":54,   "Trail-braking":51 },
-  RWD: { "Stability-first":52.5, "Trail-braking":49.5 },
-  FWD: { "Stability-first":58.5, "Trail-braking":53.5 },
-};
-const BRAKE_ENGINE_ADJ = { Front:0, Mid:1.5, Rear:1.5 };
-
-function brakesCalc({ piClass, drivetrain, brakingStyle, engineLocation, brakesUpgraded }){
-  const base = BRAKE_BASE[drivetrain][brakingStyle];
-  const adj = BRAKE_ENGINE_ADJ[engineLocation] ?? 0;
-  const front = round(Math.min(75, Math.max(35, base + adj)), 1);
-  const rear = round(100 - front, 1);
-  const idx = classIndex(piClass);
-  const callout = (idx <= 1 && !brakesUpgraded)
-    ? "Upgrade brakes at least one tier — stock brakes on D/C cars cause lockup and ruin trail-braking."
-    : null;
-  const pressure = 120;
-  return { front, rear, pressure, callout };
-}
-
-/* ---------------- 7. DIFFERENTIAL ---------------- */
-function differentialCalc({ drivetrain, balance, brakingStyle, enginePos }){
-  if (drivetrain === "AWD"){
-    const presets = {
-      Safer:      { frontAccel:40, frontDecel:5,  rearAccel:100, rearDecel:5,  centerRear:75 },
-      Neutral:    { frontAccel:45, frontDecel:3,  rearAccel:100, rearDecel:7,  centerRear:77 },
-      Aggressive: { frontAccel:50, frontDecel:0,  rearAccel:100, rearDecel:10, centerRear:80 },
-    };
-    const p = presets[balance] || presets.Neutral;
-    return { type:"AWD", frontAccel:p.frontAccel, frontDecel:p.frontDecel, rearAccel:p.rearAccel, rearDecel:p.rearDecel, centerRear:p.centerRear };
+  const hasRange = springMin !== null && springMax !== null && springMax > springMin;
+  let front = null, rear = null, unit = "";
+  if (hasRange){
+    front = round(springMin + (springMax - springMin) * fFrac, 1);
+    rear  = round(springMin + (springMax - springMin) * rFrac, 1);
+    unit  = springUnit === "kgf" ? " kgf/mm" : " lb/in";
   }
+
+  const splitPct = round(Math.abs(fFrac - rFrac) / ((fFrac + rFrac) / 2) * 100, 1);
+
+  return {
+    hasRange, front, rear, unit,
+    fPct: round(fFrac * 100, 1), rPct: round(rFrac * 100, 1),
+    frontStiffer: fFrac >= rFrac, splitPct,
+    note: SPRING_SURFACE_NOTE[discipline],
+    cwFront: round(weightLb * (frontPct/100) / 2, 0),
+    cwRear:  round(weightLb * (1 - frontPct/100) / 2, 0),
+  };
+}
+
+const RIDE_HEIGHT = {
+  touge:"Minimum, front and rear matched. Raise a notch only if you're bottoming out on crests or curbs.",
+  road:"Minimum, front and rear matched. Raise only if the suspension telemetry bar pegs out.",
+  dirt:"70–80% of the slider. Rally suspension arrives near max — leave it high.",
+  cross:"Maximum both ends. Ground clearance beats centre of gravity every time out here.",
+  drift:"Minimum both ends.",
+  drag:"Minimum front, slightly higher rear for a little forward rake on launch.",
+};
+
+/* ---------- 4. Anti-roll bars --------------------------------------------
+   The most reliable slider in the menu and the main lever on Mechanical
+   Balance. Numbers below are a starting point; the readout is the target.
+-------------------------------------------------------------------------- */
+const ARB_TABLE = {                       // [front, rear] on the 1–65 scale
+  touge: { RWD:[26,34], AWD:[28,34], FWD:[20,30] },
+  road:  { RWD:[28,32], AWD:[30,32], FWD:[22,30] },
+  dirt:  { RWD:[12,14], AWD:[12,14], FWD:[13,13] },
+  cross: { RWD:[8,10],  AWD:[8,10],  FWD:[9,9]   },
+  drift: { RWD:[60,4],  AWD:[60,4],  FWD:[60,4]  },
+  drag:  { RWD:[2,2],   AWD:[2,2],   FWD:[2,2]   },
+};
+const ARB_WEIGHT_FACTOR = { RWD:0.6, AWD:0.45, FWD:-0.5 };
+
+function arbs({ discipline, drivetrain, frontPct, power, weightLb, balance, arbMin, arbMax }){
+  const min = arbMin ?? 1, max = arbMax ?? 65;
+  let [f, r] = ARB_TABLE[discipline][drivetrain];
+
+  if (DISCIPLINES[discipline].road && discipline !== "drift" && discipline !== "drag"){
+    // Weight distribution: the heavier axle generally takes the stiffer bar,
+    // except on FWD where the driven front axle wants grip more than flatness.
+    const d = (frontPct - 50) * ARB_WEIGHT_FACTOR[drivetrain];
+    f += d; r -= d * 0.6;
+
+    // Heavier cars carry more roll moment and need more bar overall.
+    const wScale = clamp(1 + (weightLb - 3200) / 3200 * 0.25, 0.85, 1.2);
+    f *= wScale; r *= wScale;
+
+    // Stiff rear bar + big power = snap on exit. Back the rear off.
+    const pwr = power / (weightLb / 1000);          // hp per 1000 lb
+    if (drivetrain === "RWD" && pwr > 220) r -= clamp((pwr - 220) / 18, 0, 7);
+
+    if (balance === "rotational"){ f -= 2; r += 2; }
+    else if (balance === "safer"){ f += 2; r -= 2; }
+
+    // FWD chassis lift the inside rear; too much rear bar tripods the car.
+    if (drivetrain === "FWD") r = Math.min(r, 30);
+  }
+
+  return {
+    front: round(clamp(f, min, max), 1),
+    rear:  round(clamp(r, min, max), 1),
+    offRoad: !DISCIPLINES[discipline].road,
+    maxFirst: DISCIPLINES[discipline].road && discipline !== "drift" && discipline !== "drag",
+    scale: `${min}–${max}`,
+  };
+}
+
+/* ---------- 5. Damping ---------------------------------------------------
+   Scale is 1–20. Rebound runs stiffer than bump on every source; they disagree
+   on how much (bump anywhere from 40% to 67% of rebound), so the card shows
+   the band.
+-------------------------------------------------------------------------- */
+const DAMP_TABLE = {                      // [bump, rebound] front baseline
+  touge:[5.2, 8.5], road:[5.5, 9.0], dirt:[3.6, 6.0],
+  cross:[2.7, 4.5], drift:[7.5, 12.0], drag:[7.0, 4.0],
+};
+
+function damping({ discipline, weightLb, springSplitPct, frontStiffer }){
+  let [bump, reb] = DAMP_TABLE[discipline];
+
+  // Heavier cars and stiffer springs need more damping to settle.
+  const wScale = clamp(1 + (weightLb - 3200) / 3200 * 0.3, 0.82, 1.28);
+  let bumpF = bump * wScale, rebF = reb * wScale;
+
+  // Rear offset tracks the front-to-rear SPRING split, with the sign set by
+  // whichever end is stiffer. Bigger split, bigger offset.
+  const s = springSplitPct;
+  let dReb, dBump;
+  if (s < 1.5)      { dReb = 0.2; dBump = 0.1; }
+  else if (s < 35)  { dReb = 0.3; dBump = 0.2; }
+  else if (s < 40)  { dReb = 0.6; dBump = 0.4; }
+  else              { dReb = 1.2; dBump = 0.8; }
+  const sign = frontStiffer ? -1 : 1;     // stiffer front ⇒ rear dampers sit lower
+
+  let bumpR = bumpF + sign * dBump, rebR = rebF + sign * dReb;
+
+  if (discipline === "drift"){ bumpR = 5.0; rebR = 7.5; }
+  if (discipline === "drag"){ bumpR = 3.0; rebR = 9.0; }   // inverted on purpose
+  if (!DISCIPLINES[discipline].road){ rebF += 1.0; rebR += 1.0; }  // terrain recovery
+
+  const cl = v => round(clamp(v, 1, 20), 1);
+  const out = { bumpFront:cl(bumpF), bumpRear:cl(bumpR), rebFront:cl(rebF), rebRear:cl(rebR) };
+  out.ratio = round(out.bumpFront / out.rebFront * 100, 0);
+  return out;
+}
+
+/* ---------- 6. Brakes -----------------------------------------------------
+   The reversed-slider bug from FH5 and earlier is fixed in FH6 — the slider
+   now does what the label says.
+-------------------------------------------------------------------------- */
+function brakes({ discipline, drivetrain, enginePos, brakingStyle, weightLb }){
+  let bias, note;
+
+  if (discipline === "drift"){
+    bias = 66;
+    note = "Forward bias so you can brake mid-drift for tandems without the rear snapping round. Drop to 45–50% instead if you want rotation-first entries.";
+  } else if (discipline === "drag"){
+    bias = 50;
+    note = "Brakes barely matter on a strip. Leave it at default and spend your attention on 1st gear.";
+  } else if (!DISCIPLINES[discipline].road){
+    bias = 48;
+    note = "Slightly rearward so the car settles on landings and rotates on loose surfaces.";
+  } else if (brakingStyle === "trail"){
+    bias = enginePos === "Front" ? 47 : 46;
+    note = "Rotation-first. The rear shares more of the work, so you get more total braking force and more rotation as you trail off the pedal — but it's easier to spin.";
+  } else {
+    bias = 54;
+    note = "Stability-first. The fronts do most of the stopping, which is predictable and hard to spin under braking.";
+  }
+
+  if (DISCIPLINES[discipline].road && drivetrain === "FWD" && discipline !== "drift") bias += 3;
+  if (weightLb > 4000 && DISCIPLINES[discipline].road) bias += 1;
+
+  // Pressure: sources split hard here (100% vs 125–145%). The test everyone
+  // agrees on is where lockup lands in the trigger pull, so start conservative.
+  let pressure = DISCIPLINES[discipline].road ? 105 : 115;
+  if (discipline === "drift") pressure = 95;
+  if (discipline === "drag")  pressure = 100;
+
+  return {
+    front: round(clamp(bias, 40, 72), 0),
+    rear:  round(100 - clamp(bias, 40, 72), 0),
+    pressure, note,
+  };
+}
+
+/* ---------- 7. Differential ---------------------------------------------- */
+function differential({ drivetrain, discipline, balance }){
+  const t = balance === "safer" ? 0 : balance === "rotational" ? 1 : 0.5;
+  const lerp = (a, b) => a + (b - a) * t;
+  const offRoad = !DISCIPLINES[discipline].road;
+
+  if (discipline === "drift"){
+    return { type:"RWD", rearAccel:100, rearDecel:10,
+      note:"Locked on power is what makes a slide predictable — both rear wheels turning together. The drift diff usually sets this for you." };
+  }
+  if (discipline === "drag"){
+    return { type: drivetrain, rearAccel:86, rearDecel:10, frontAccel:86, frontDecel:10, center:80,
+      note:"Near-locked on power for the launch. Deceleration is irrelevant on a strip." };
+  }
+
   if (drivetrain === "RWD"){
-    const trail = brakingStyle === "Trail-braking";
-    const accelRange = trail ? [40,50] : [55,65];
-    const decelRange = trail ? [5,10] : [15,15];
-    const t = balance === "Safer" ? 0 : balance === "Aggressive" ? 1 : 0.5;
-    const accel = round(accelRange[0] + (accelRange[1]-accelRange[0])*t, 0);
-    const decel = round(decelRange[0] + (decelRange[1]-decelRange[0])*t, 0);
-    return { type:"RWD", accel, decel, trail };
+    const accel = even(clamp(lerp(62, 50) + (offRoad ? 22 : 0), 40, 95));
+    const decel = round(clamp(lerp(20, 10) - (offRoad ? 4 : 0), 5, 30), 0);
+    return { type:"RWD", rearAccel:accel, rearDecel:decel,
+      note:`Accel range is 50–70%: higher gives more exit drive but demands throttle discipline. Decel 10–20%: higher settles the entry, lower frees the car to rotate on lift.${offRoad ? " Bumped up for loose surfaces." : ""}` };
   }
-  return { type:"FWD", accel:95, decel:5 };
+  if (drivetrain === "FWD"){
+    const accel = even(clamp(lerp(88, 82), 80, 95));
+    const decel = round(clamp(lerp(6, 0), 0, 10), 0);
+    return { type:"FWD", frontAccel:accel, frontDecel:decel,
+      note:"FWD tolerates a very locked accel diff and a very open decel diff better than anything else. Above ~95% accel it starts refusing to turn in." };
+  }
+  // AWD
+  const fA = even(clamp(lerp(88, 82), 80, 95));
+  const fD = round(clamp(lerp(6, 0), 0, 10), 0);
+  const rA = even(clamp(lerp(62, 50) + (offRoad ? 28 : 0), 40, 95));
+  const rD = round(clamp(lerp(16, 10), 5, 25), 0);
+  const center = round(offRoad ? clamp(lerp(55, 68), 50, 70) : clamp(lerp(72, 80), 50, 85), 0);
+  return { type:"AWD", frontAccel:fA, frontDecel:fD, rearAccel:rA, rearDecel:rD, center,
+    note:`Treat the front diff like a FWD car and the rear like a RWD car. Centre split never goes below 50%; more rear bias means more rotation.${offRoad ? " Off-road runs the centre closer to neutral." : ""}` };
 }
 
-/* ---------------- 8. AERO ---------------- */
-const AERO_ENGINE_TARGET = { Front:0.44, Mid:0.42, Rear:0.41 };
-const AERO_DRIVETRAIN_TARGET = { AWD:0.415, RWD:0.435, FWD:0.41 };
-const AERO_DRIVETRAIN_BAND = { AWD:[0.40,0.43], RWD:[0.42,0.45], FWD:[0.40,0.42] };
+/* ---------- 8. Aero ------------------------------------------------------- */
+function aero({ discipline, drivetrain, piClass, power, frontPct }){
+  const idx = ["D","C","B","A","S1","S2","R","X"].indexOf(piClass);
+  if (idx <= 1) return { na:true };
+  if (discipline === "drag") return { na:true, dragNote:true };
 
-function aeroCalc({ piClass, drivetrain, enginePos, frontWeightPct }){
-  const idx = classIndex(piClass);
-  if (idx <= 1) return { na: true };
-  let target = (AERO_ENGINE_TARGET[enginePos] + AERO_DRIVETRAIN_TARGET[drivetrain]) / 2;
-  if (frontWeightPct > 53) target -= 0.01;
-  else if (frontWeightPct < 47) target += 0.01;
-  target = Math.min(0.45, Math.max(0.40, round(target, 3)));
-  return { na:false, target, band: AERO_DRIVETRAIN_BAND[drivetrain] };
+  // Sources split on the target: ~0.42–0.45 vs ~0.50. Show the overlap.
+  let target = 0.46;
+  if (drivetrain === "RWD") target -= 0.02;        // slight rear emphasis
+  else target += 0.01;                             // FWD/AWD slight front emphasis
+  if (frontPct > 55) target -= 0.02;
+  if (power > 700 && drivetrain === "RWD") target -= 0.02;
+
+  return {
+    na:false,
+    target: round(clamp(target, 0.40, 0.52), 2),
+    band: "0.42–0.50",
+    level: discipline === "touge" ? "Low to moderate — you rarely reach the speeds where a wing pays for itself on a mountain road."
+         : discipline === "road" ? "Near max for circuits with fast sweepers; much lower for sprints and speed runs."
+         : "Minimal — off-road speeds don't generate useful downforce.",
+  };
 }
 
-/* ---------------- 9. GEARING ---------------- */
-function gearingCalc({ piClass, topSpeedTarget, numGears, peakRPM, redlineRPM }){
-  const defaultSpeeds = { D:140, C:140, B:170, A:170, S1:200, S2:200, R:220 };
-  const target = topSpeedTarget || defaultSpeeds[piClass];
-  const gears = numGears || 6;
-  const topRatio = round(308/target, 2);
-  const firstRatio = round(topRatio*3.0, 2);
+/* ---------- 9. Gearing ---------------------------------------------------- */
+const FD_DISCIPLINE = { touge:0.12, road:0, dirt:0.50, cross:0.75, drift:0.10, drag:-0.20 };
 
-  // Optional powerband nudge: this is a heuristic shaping of the curve, not a
-  // physics formula. The base curve (p = 1) is an even-percentage drop per
-  // gear, which is the standard community starting point regardless of
-  // engine. If the player knows their power/torque graph, a narrow powerband
-  // (peak power close to redline) benefits from slightly tighter spacing in
-  // the TOP gears specifically, since falling out of a narrow band costs more
-  // acceleration than in a wide one. p < 1 compresses the top of the curve;
-  // p = 1 (no RPM data entered) reproduces the original curve exactly.
-  let p = 1;
-  let powerbandNote = null;
-  if (peakRPM && redlineRPM && redlineRPM > peakRPM){
-    const widthFrac = (redlineRPM - peakRPM) / redlineRPM; // ~0.05 narrow, ~0.35 wide
-    p = Math.max(0.65, Math.min(1, 0.65 + widthFrac));
-    powerbandNote = p < 0.95
-      ? `Narrow-ish powerband detected (peak ${peakRPM} / redline ${redlineRPM}) — top gears nudged slightly tighter to hold RPM in range after each shift.`
-      : `Wide powerband (peak ${peakRPM} / redline ${redlineRPM}) — spacing left close to the standard even curve.`;
-  }
+function gearing({ power, discipline, aeroLevel, numGears, weightLb }){
+  const pwrPerTon = power / ((weightLb || 3200) / 1000);
+  const p = power > 800 ? power / 2 : power;       // the formula folds above 800 hp
+  let fd = 4.25 + ((400 - p) / 6) * 0.01;
+  fd += FD_DISCIPLINE[discipline];
+  fd -= [0, 0.05, 0.18, 0.35][clamp(Math.round(aeroLevel), 0, 3)];  // drag costs top speed
 
+  // Log-spaced ladder: biggest gap 1st→2nd, tightest at the top, because drag
+  // grows with the square of speed. 1st scales with power-to-weight — a low-power
+  // car needs a shorter 1st to get into its powerband at all.
+  const top = 0.92;
+  const first = round(clamp(3.6 - pwrPerTon / 180, 2.4, 4.2), 2);
   const ladder = [];
-  for (let i=0; i<gears; i++){
-    const t = i/(gears-1);
-    const shaped = Math.pow(t, p);
-    ladder.push(round(firstRatio * Math.pow(topRatio/firstRatio, shaped), 2));
+  for (let i = 0; i < numGears; i++){
+    const t = numGears === 1 ? 0 : i / (numGears - 1);
+    ladder.push(round(first * (top / first) ** (t ** 0.85), 2));
   }
-  return { target, ladder, powerbandNote };
+  return { fd: round(clamp(fd, 2.2, 6.0), 2), ladder, first };
 }
 
-/* ---- Upgrade priorities & Meta tables ---- */
-const CLASS_META = {
-  D:  { tire:"Stock tires almost always", drivetrain:"Whatever's cheapest/lightest", focus:"Brakes, weight reduction, suspension unlock" },
-  C:  { tire:"Stock tires almost always", drivetrain:"RWD/AWD fine — don't overspend PI on a swap", focus:"Brakes, weight reduction, ARBs/diff unlock" },
-  B:  { tire:"Stock most of the time; street tires for tight circuits", drivetrain:"RWD viable; AWD if PI allows", focus:"Weight reduction, suspension, brake upgrade" },
-  A:  { tire:"Street minimum; semi-slick for heavier/older cars", drivetrain:"AWD increasingly competitive", focus:"Tire upgrade, aero unlock, drivetrain tuning" },
-  S1: { tire:"Semi-slick to race (slick)", drivetrain:"AWD generally dominant", focus:"Aero, diff tuning, engine internals" },
-  S2: { tire:"Race (slick) typical", drivetrain:"AWD dominant", focus:"Maximize PWR after the chassis is locked in" },
-  R:  { tire:"Race (slick), track-only builds", drivetrain:"AWD or purpose-built RWD", focus:"Full race-spec everything" },
-};
-const ENGINE_ORDER = ["Race Exhaust","Race Intake","Intake Manifold","Ignition","Fuel System","Flywheel","Camshaft","Pistons/Compression","Valves","Displacement"];
+/* =========================================================================
+   FIX-IT MATRIX
+   ========================================================================= */
+const PHASES = [
+  { id:"all",   label:"Show everything" },
+  { id:"brake", label:"Braking" },
+  { id:"entry", label:"Turn-in" },
+  { id:"mid",   label:"Mid-corner" },
+  { id:"exit",  label:"Exit" },
+  { id:"other", label:"Ride & bumps" },
+];
 
-function upgradePriority({ currentClass, targetClass, currentDrivetrain }){
-  const idxCur = classIndex(currentClass), idxTgt = classIndex(targetClass);
-  const curMeta = CLASS_META[currentClass], tgtMeta = CLASS_META[targetClass];
+const SYMPTOMS = [
+  { phase:"entry", title:"Won't turn in", desc:"You brake into the corner and the front just refuses to bite.",
+    fixes:["<b>Soften the front ARB</b> by 2–3 — this is the big one","<b>Soften the front springs</b> ~5%","<b>Soften front rebound</b> by 0.3","<b>Shift brake bias 1–2% rearward</b>","<b>Lower diff deceleration</b> by 2–5%","<b>Raise caster</b> 0.5° for more dynamic camber"] },
+  { phase:"mid", title:"Pushes wide mid-corner", desc:"Steady throttle, steady steering, and the front won't hold the line.",
+    fixes:["<b>Soften the front ARB</b> by 2","<b>Drop front tire pressure</b> 1–2 psi","<b>Add 0.3° negative front camber</b>","<b>Add front downforce</b>","<b>Lower front ride height</b> a notch"] },
+  { phase:"exit", title:"Front washes out on power", desc:"Common on AWD and FWD — you get on the throttle and the nose goes light.",
+    fixes:["<b>Reduce front diff accel</b> by 4%","<b>Stiffen the rear springs</b> ~5%","<b>Reduce rear downforce</b>","<b>Stiffen rear bump</b> by 0.2","<b>Reduce rear toe-in</b> toward zero"] },
+  { phase:"mid", title:"Understeers only in fast corners", desc:"Slow corners are fine; fast sweepers plow. That's an aero problem, not a mechanical one.",
+    fixes:["<b>Front downforce toward max</b>","<b>Add 0.5° negative front camber</b>","<b>Lower front ride height</b>","<b>Small reduction in rear downforce</b>"] },
+  { phase:"entry", title:"Rear steps out when you lift or brake", desc:"Trail-brake or lift-off and the back end rotates further than you asked.",
+    fixes:["<b>Raise diff deceleration</b> by 2–5%","<b>Soften the rear ARB</b> by 2","<b>Shift brake bias 1–2% forward</b>","<b>Soften the rear springs</b> ~5%","<b>Stiffen front rebound</b> by 0.2"] },
+  { phase:"mid", title:"Rear slides through the whole corner", desc:"Constant throttle, and the back keeps drifting out.",
+    fixes:["<b>Soften the rear ARB</b> by 2","<b>Add 0.3° negative rear camber</b>","<b>Add rear downforce</b>","<b>Lower rear ride height</b>"] },
+  { phase:"exit", title:"Snaps loose when you get on the gas", desc:"Classic high-power RWD. The rear breaks free the moment you commit.",
+    fixes:["<b>Reduce rear diff accel</b> by 4%","<b>Soften the rear springs</b> ~5%","<b>Soften rear bump</b> by 0.2","<b>Add rear downforce</b>","<b>Add 0.1–0.2° rear toe-in</b>"] },
+  { phase:"mid", title:"Violent, no-warning snap oversteer", desc:"The rear comes round with nothing leading up to it. Almost always a rear that's far too stiff.",
+    fixes:["<b>Soften the rear ARB</b> by 1–2 points, then more","<b>Soften the rear springs</b> ~10%","<b>Soften rear rebound</b> by 0.5","<b>Soften rear bump</b> by 0.3","<b>Step diff accel down</b> 4–8%"] },
+  { phase:"brake", title:"Nose dives hard under braking", desc:"The front compresses dramatically and the car is already unsettled before you turn in.",
+    fixes:["<b>Stiffen front bump</b> by 0.3–0.5","<b>Stiffen the front springs</b> ~5%","<b>Stiffen front rebound</b>","<b>Reduce brake pressure</b> 5%"] },
+  { phase:"other", title:"Bouncy and floaty", desc:"The car oscillates after bumps and won't settle. Dampers are too soft for the springs.",
+    fixes:["<b>Stiffen bump</b> on both axles by 0.2","<b>Stiffen rebound</b> on both axles by 0.2","<b>Stiffen springs</b> ~5% if it's still loose"] },
+  { phase:"other", title:"Skitters over bumps and curbs", desc:"Sudden grip loss on rough surfaces. Everything is too stiff, so the tires are leaving the ground.",
+    fixes:["<b>Soften bump damping</b> by 0.3","<b>Soften springs</b> ~5%","<b>Soften both ARBs</b> by 2–3","<b>Raise ride height</b> a notch"] },
+  { phase:"other", title:"Bottoms out and scrapes", desc:"The suspension hits its travel limit. When it does, grip drops to almost nothing for a moment.",
+    fixes:["<b>Raise ride height</b> 0.1–0.3 in","<b>Stiffen springs</b> 5–10%","<b>Stiffen bump</b> by 0.2"] },
+  { phase:"exit", title:"Spins the wheels instead of driving forward", desc:"High-power exit problem. The power's going into smoke rather than the road.",
+    fixes:["<b>Reduce diff accel</b> by 4%","<b>Soften the rear springs</b> ~5%","<b>Soften rear bump</b> by 0.2","<b>Add rear downforce</b>","<b>Lower rear tire pressure</b> 1 psi"] },
+  { phase:"other", title:"Lazy through chicanes", desc:"The car takes too long to change direction. Too soft to transition cleanly.",
+    fixes:["<b>Stiffen both ARBs</b> by 2–3","<b>Stiffen rebound</b> on both axles by 0.3","<b>Stiffen springs</b> ~5%"] },
+];
+
+/* =========================================================================
+   BUILD ORDER
+   ========================================================================= */
+const CLASS_TIRE = {
+  D:"Stock — almost always", C:"Stock — almost always",
+  B:"Stock most of the time; street for tight technical routes",
+  A:"Street minimum; semi-slick for heavier or older cars",
+  S1:"Semi-slick or race slick", S2:"Race slick",
+  R:"Race slick, track-spec", X:"Race slick, whatever holds together",
+};
+const CLASS_ORDER = ["D","C","B","A","S1","S2","R","X"];
+
+function buildOrder({ cur, tgt, drivetrain, discipline }){
+  const ci = CLASS_ORDER.indexOf(cur), ti = CLASS_ORDER.indexOf(tgt);
   const steps = [];
 
-  if (idxTgt <= 1) steps.push({ title:"Tires", included:false, detail:`Stay on your current compound — ${targetClass} class doesn't reward a tire upgrade.` });
-  else if (curMeta.tire === tgtMeta.tire) steps.push({ title:"Tires", included:false, detail:`Your current tire meta already matches ${targetClass} class expectations (${tgtMeta.tire.toLowerCase()}).` });
-  else steps.push({ title:"Tires", included:true, detail:`Move toward: ${tgtMeta.tire}.` });
+  steps.push({ inc:true, key:true, title:"Front tire width",
+    detail:"New in FH6 and probably the best PI-per-grip buy in the game. One or two notches on the front often beats jumping a whole compound tier. Always leave budget for this before you spend on power." });
 
-  if (idxCur <= 1) steps.push({ title:"Brakes", included:true, flagged:true, detail:"Upgrade brakes at least one tier — stock D/C brakes cause lockup and will hold this build back regardless of target class." });
-  else steps.push({ title:"Brakes", included:true, detail:"Worth a tier if you plan to trail-brake or haven't upgraded since a lower class." });
+  steps.push({ inc: ti >= 3, title:"Tire compound",
+    detail: ti >= 3 ? `Target: ${CLASS_TIRE[tgt]}. Compound sets your grip ceiling — nothing in the tune menu raises it.`
+                    : `${tgt} class doesn't reward a compound upgrade. ${CLASS_TIRE[tgt]}.` });
 
-  steps.push({ title:"Weight reduction", included:true, detail:"Always near the top of the list — the best PI-per-performance upgrade in the game." });
-  steps.push({ title:"Suspension (Race)", included:true, detail:"Required to unlock the full tuning menu — springs, dampers, ARBs, alignment." });
+  steps.push({ inc:true, key: ci <= 2, title:"Brakes",
+    detail: ci <= 2
+      ? "Genuinely worth PI in FH6, unlike FH5. Stock brakes lock up on quick downshifts, and Japan's mountain passes punish that hard. Race brakes also unlock the balance and pressure sliders."
+      : "Race brakes unlock the balance and pressure sliders. Worth it if you trail-brake or haven't touched them since a lower class." });
 
-  if (idxCur <= 1) steps.push({ title:"Anti-roll bars + Differential unlock", included:true, flagged:true, detail:"Race differential is essential coming from D/C — it unlocks the lock sliders this calculator tunes in Part 1." });
-  else steps.push({ title:"Anti-roll bars + Differential unlock", included:true, detail:"Confirm race suspension/diff are unlocked so ARB and lock-slider tuning is available." });
+  steps.push({ inc:true, key:true, title:"Weight reduction",
+    detail: discipline === "drag"
+      ? "Max it. On a strip, mass is the enemy and there's no downside."
+      : "Burn as much PI here as you can afford. It's the one upgrade that improves acceleration, braking, cornering and lateral G all at once. Check PWR before and after on cars already under 800 kg — the PI can cost more than the weight saves." });
 
-  const favorsAWD = idxTgt >= 3;
-  if (!currentDrivetrain) steps.push({ title:"Drivetrain swap", included:false, detail:"Tell us the car's current drivetrain to get a swap recommendation." });
-  else if (currentDrivetrain === "AWD") steps.push({ title:"Drivetrain swap", included:false, detail:"Already AWD — nothing to swap." });
-  else if (favorsAWD) steps.push({ title:"Drivetrain swap", included:true, detail:`${targetClass} class meta favors AWD over ${currentDrivetrain}. Worth considering, but weigh the PI cost of the swap against simply tuning the diff you have.` });
-  else steps.push({ title:"Drivetrain swap", included:false, detail:`Don't swap drivetrain unless the car is badly unbalanced — it's rarely worth the PI at ${targetClass} class.` });
+  const susp = discipline === "dirt" ? "Rally springs & dampers"
+             : discipline === "drift" ? "Drift springs & dampers"
+             : "Race springs & dampers";
+  steps.push({ inc:true, key:true, title: susp,
+    detail:`The single biggest tuning unlock — alignment, spring rate, ride height and damping are all locked without it. Costs 2–5 PI. ${discipline === "dirt" ? "Take rally, not race, for loose surfaces." : "Don't install rally by accident; it's a common slip on cars like the 911 GT3."} Worth checking cars with factory four-wheel steering first — race suspension removes the 4WS and some of them drive better without it.` });
 
-  if (idxTgt <= 1) steps.push({ title:"Aero parts", included:false, detail:`Aero isn't typically unlocked or useful at ${targetClass} class — skip it for now.` });
-  else if (idxCur >= 2) steps.push({ title:"Aero parts", included:false, detail:"Aero is likely already unlocked at your current class — fine-tune the wings you have instead of unlocking new parts." });
-  else steps.push({ title:"Aero parts", included:true, detail:`Unlock aero — ${targetClass} class rewards it once tires and chassis are sorted.` });
+  steps.push({ inc:true, key:true, title:"Anti-roll bars, front and rear",
+    detail:"Install both. These are the most predictable sliders in the game and the main lever on Mechanical Balance. A build without them is a build you can't balance." });
 
-  steps.push({ title:"Engine upgrades", included:true, detail:`Add power last, only enough to land inside the ${targetClass} PI range. Apply in order: ${ENGINE_ORDER.join(" → ")}. Stop as soon as you hit the PI ceiling.` });
+  steps.push({ inc:true, title:"Differential",
+    detail: discipline === "drift" ? "Drift differential." : "Race (or rally / off-road) differential. Unlocks the accel and decel locking that most of the corner-exit tuning runs through." });
+
+  const favorsAWD = ti >= 4;
+  if (!drivetrain) steps.push({ inc:false, title:"Drivetrain swap", detail:"Tell the form which drivetrain the car has and this will give a real answer." });
+  else if (drivetrain === "AWD") steps.push({ inc:false, title:"Drivetrain swap", detail:"Already AWD. Nothing to do." });
+  else if (favorsAWD) steps.push({ inc:true, title:"Drivetrain swap",
+    detail:`AWD is the strongest all-round choice at ${tgt}, though RWD stays competitive a long way up in FH6 — some sources say all the way to R. Weigh the PI cost of the swap against just tuning the diff you already have.` });
+  else steps.push({ inc:false, title:"Drivetrain swap", detail:`Not worth the PI at ${tgt} unless the car is genuinely unbalanced.` });
+
+  steps.push({ inc: ti >= 3 && discipline === "road", title:"Aero",
+    detail: ti >= 3 && discipline === "road"
+      ? "Fit front and rear together or neither — one end alone creates a real imbalance at speed. Which rear wing you pick is cosmetic; they all tune the same."
+      : "Skip for now. Touge and off-road speeds rarely generate enough downforce to justify the PI or the drag." });
+
+  steps.push({ inc:true, title:"Chassis reinforcement",
+    detail:"Sport tier is the sweet spot under about 1,200 kg — race tier adds 10–30 kg that can erase the rigidity gain on a light car. Go race tier for cross country, where the chassis takes a beating. Skip it entirely on drag builds." });
+
+  steps.push({ inc:true, title:"Engine, last",
+    detail:"Power fills whatever PI is left after the chassis is sorted. Exhaust first, then intake, ignition, fuel and valves. Cams and forced induction are situational — maxing a cam spikes horsepower without much torque, which makes the car peakier and harder to drive. Stop the moment you hit the class ceiling." });
 
   return steps;
 }
 
 /* =========================================================================
-   UI WIRING
+   RENDER
    ========================================================================= */
-
-document.querySelectorAll(".tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.tab + "-tab").classList.add("active");
-  });
-});
-
-document.getElementById("infoToggle").addEventListener("click", () => {
-  const panel = document.getElementById("infoPanel");
-  panel.hidden = !panel.hidden;
-});
-
-// (FIXED: ACCURATE DEFAULT WEIGHT ASSIGNMENTS BASED ON PERFORMANCE ENGINE POOL)
-function autoFrontWeight(enginePos){
-  return { Front: 54, Mid: 43, Rear: 38 }[enginePos];
-}
-
 let weightUnit = "lb";
-document.querySelectorAll("#unitToggle button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const weightInput = document.getElementById("weight");
-    const current = Number(weightInput.value) || 0;
-    if (btn.dataset.unit === weightUnit) return;
-    if (btn.dataset.unit === "kg") weightInput.value = round(current/2.20462, 0);
-    else weightInput.value = round(current*2.20462, 0);
-    weightUnit = btn.dataset.unit;
-    document.querySelectorAll("#unitToggle button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    runCalculator();
-  });
-});
 
-function fr(frontVal, rearVal, unit){
-  return `<div class="fr-row">
-    <div class="fr-chip front"><div class="lbl">Front</div><div class="val">${frontVal}<span class="unit">${unit || ""}</span></div></div>
-    <div class="fr-chip rear"><div class="lbl">Rear</div><div class="val">${rearVal}<span class="unit">${unit || ""}</span></div></div>
-  </div>`;
+const el = id => document.getElementById(id);
+const numOrNull = id => { const v = el(id).value; return v === "" ? null : Number(v); };
+
+function chip(side, label, value, unit){
+  return `<div class="chip ${side}"><div class="lbl">${label}</div>
+    <div class="val">${value}${unit ? `<span class="u">${unit}</span>` : ""}</div></div>`;
 }
-function rowLabel(text){
-  return `<div class="field-hint" style="margin:8px 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-size:10.2px">${text}</div>`;
+function frPair(fVal, rVal, unit, fLabel = "Front", rLabel = "Rear"){
+  return `<div class="fr">${chip("f", fLabel, fVal, unit)}${chip("r", rLabel, rVal, unit)}</div>`;
+}
+function card(idx, title, body, why, source){
+  return `<div class="card"><h3><span class="idx">${idx}</span>${title}</h3>${body}
+    ${why ? `<div class="why">${why}${source ? `<span class="src">${source}</span>` : ""}</div>` : ""}</div>`;
 }
 
-function card(title, bodyHtml, why){
-  return `<div class="card"><h3><span class="dot"></span>${title}</h3>${bodyHtml}${why ? `<div class="why">${why}</div>` : ""}</div>`;
+function readCar(){
+  const raw = Number(el("weight").value) || 0;
+  const weightLb = weightUnit === "kg" ? raw * LB_PER_KG : raw;
+  const springUnit = el("springUnit").value;
+  let springMin = numOrNull("springMin"), springMax = numOrNull("springMax");
+  // Defensive: every lookup table below is keyed, so a value that isn't a known
+  // key would throw rather than degrade. Fall back to a sane default instead.
+  const discipline = DISCIPLINES[el("discipline").value] ? el("discipline").value : "road";
+  const drivetrain = ["RWD","AWD","FWD"].includes(el("drivetrain").value) ? el("drivetrain").value : "AWD";
+
+  return {
+    discipline, drivetrain,
+    weightLb,
+    frontPct: clamp(Number(el("frontPct").value) || 50, 25, 75),
+    power: Math.max(40, Number(el("power").value) || 400),
+    enginePos: el("enginePos").value,
+    compound: el("compound").value,
+    piClass: el("piClass").value,
+    brakingStyle: el("brakingStyle").value,
+    balance: el("balance").value,
+    springMin, springMax, springUnit,
+    numGears: clamp(Number(el("numGears").value) || 6, 3, 10),
+    aeroLevel: clamp(Number(el("aeroLevel").value) || 0, 0, 3),
+  };
 }
 
-function runCalculator(){
-  const weightRaw = Number(document.getElementById("weight").value) || 0;
-  const weightLbs = weightUnit === "kg" ? weightRaw*2.20462 : weightRaw;
-  const enginePos = document.getElementById("enginePos").value;
-  const frontWeightInput = document.getElementById("frontWeight").value;
-  const frontWeightPct = frontWeightInput !== "" ? Number(frontWeightInput) : autoFrontWeight(enginePos);
-  const drivetrain = document.getElementById("drivetrain").value;
-  const compound = document.getElementById("compound").value;
-  const piClass = document.getElementById("piClass").value;
-  const brakingStyle = document.getElementById("brakingStyle").value;
-  const balance = document.getElementById("balance").value;
-  const arbMin = document.getElementById("arbMin").value;
-  const arbMax = document.getElementById("arbMax").value;
-  const springMinInput = document.getElementById("springMin").value;
-  const springMaxInput = document.getElementById("springMax").value;
-  const springMin = springMinInput !== "" ? Number(springMinInput) : null;
-  const springMax = springMaxInput !== "" ? Number(springMaxInput) : null;
-  const topSpeedInput = document.getElementById("topSpeed").value;
-  const topSpeedTarget = topSpeedInput !== "" ? Number(topSpeedInput) : null;
-  const numGears = Number(document.getElementById("numGears").value) || 6;
-  const peakRPMInput = document.getElementById("peakRPM").value;
-  const peakRPM = peakRPMInput !== "" ? Number(peakRPMInput) : null;
-  const redlineRPMInput = document.getElementById("redlineRPM").value;
-  const redlineRPM = redlineRPMInput !== "" ? Number(redlineRPMInput) : null;
-  const brakesUpgraded = document.getElementById("brakesUpgraded").checked;
-  const useMeta = document.getElementById("useMetaPressure").checked;
-  const nightCold = document.getElementById("nightCold").checked;
+function renderTune(){
+  const c = readCar();
+  const d = DISCIPLINES[c.discipline];
 
-  const color = CLASS_COLORS[piClass];
-  document.documentElement.style.setProperty("--class-color", color);
-  document.documentElement.style.setProperty("--class-color-soft", color + "26");
-  document.getElementById("classBadge").textContent = piClass;
-  document.getElementById("classLabel").textContent = CLASS_LABELS[piClass];
+  const tp = tires(c);
+  const al = alignment(c);
+  const sp = springs(c);
+  const ar = arbs({ ...c, arbMin:1, arbMax:65 });
+  const dm = damping({ discipline:c.discipline, weightLb:c.weightLb,
+                       springSplitPct:sp.splitPct, frontStiffer:sp.frontStiffer });
+  const br = brakes(c);
+  const df = differential(c);
+  const ae = aero(c);
+  const ge = gearing(c);
 
-  const tp = tirePressure({ compound, drivetrain, useMeta, nightCold, weightLbs, enginePos });
-  const al = alignment({ piClass, weightLbs, balance, frontWeightPct });
-  const sp = springs({ balance, weightLbs, frontWeightPct, drivetrain, springMin, springMax });
-  const ar = arbCalc({ piClass, frontWeightPct, arbMin, arbMax, drivetrain, enginePos, weightLbs });
-  const dm = damping({ rateFront: sp.rateFront, rateRear: sp.rateRear, frontWeightPct });
-  const br = brakesCalc({ piClass, drivetrain, brakingStyle, engineLocation: enginePos, brakesUpgraded });
-  const df = differentialCalc({ drivetrain, balance, brakingStyle, enginePos });
-  const ae = aeroCalc({ piClass, drivetrain, enginePos, frontWeightPct });
-  const ge = gearingCalc({ piClass, topSpeedTarget, numGears, peakRPM, redlineRPM });
+  /* ---- Mechanical Balance panel ---- */
+  el("mechIntro").textContent = d.road && c.discipline !== "drag"
+    ? "FH6 puts a live front-versus-rear grip number on the tuning screen. It moves mainly with the anti-roll bars. Below about 0.55 the car understeers; above about 0.65 the rear gives up too easily. So the bar numbers below are a place to start, not an answer — the readout is the answer."
+    : "Mechanical Balance still shows up off-road, but the tarmac target window doesn't apply. On loose surfaces you want both bars soft so each wheel can follow the ground independently, and you balance the car with the differential and dampers instead.";
 
-  let html = "";
+  el("mechS1").textContent = ar.maxFirst
+    ? "Set both bars at or near maximum, or start from the numbers below. Stiff bars sharpen the car and keep your alignment working under load."
+    : "Off-road inverts this. Start both bars near minimum and leave them there.";
 
-  // Tires
-  html += card("Tires" + (tp.useMeta ? " (low-pressure meta)" : ""),
-    fr(tp.active.front, tp.active.rear, " psi"),
-    tp.useMeta
-      ? "⚠️ Competitive contact-patch meta — tire damage barely matters in standard lobbies/Rivals, but this is a real departure from \"feel-first\" tuning. Switch off for a more natural feel."
-      : `Scaled by compound, car weight, and drivetrain · target hot: ~${tp.standard.hotTarget} psi · front gets the extra load.`
-  );
+  /* ---- Cards ---- */
+  let h = "";
 
-  // Alignment
-  html += card("Alignment",
-    rowLabel("Camber") + fr(al.camberFront + "°", al.camberRear + "°", "") +
-    rowLabel("Toe (+ = out, − = in)") + fr((al.toeFront >= 0 ? "+" : "") + al.toeFront.toFixed(2) + "°", al.toeRear.toFixed(2) + "°", "") +
-    `<div class="field-hint" style="margin-top:6px">Caster: <b style="color:var(--text)">${al.caster}°</b> (both)</div>`,
-    "Front toe-OUT is intentional for road/touge — it's what gives instant turn-in on tight street corners. Rear stays slightly toe-in for stability."
-  );
+  h += card("01", "Tires",
+    frPair(tp.front, tp.rear, " psi") +
+    `<div class="band"><b>Target hot range for ${d.label.toLowerCase()}:</b> ${tp.band} psi</div>`,
+    `These are <b>hot</b> pressures — drive a minute, then check the Tires screen in telemetry. In FH6 pressure is a responsiveness dial, not a temperature one: setting it low doesn't generate heat the way real physics would. Lower gives more grip and slower steering; higher gives sharper response and less grip. Your grip ceiling comes from compound and width, not from hitting a magic psi.`,
+    "ForzaTune · forza.guide · FH6 reference tables");
 
-  // Springs
-  html += card("Springs",
-    fr(sp.rateFront, sp.rateRear, " lb/in"),
-    `Corner weight ${sp.cwFront} / ${sp.cwRear} lb · slider range used: ${sp.rangeUsed.min}–${sp.rangeUsed.max}<br>${sp.drivetrainNote}<br>Ride height: run max, front slightly higher than rear.`
-  );
+  h += card("02", "Alignment",
+    `<div class="sublabel">CAMBER</div>` + frPair(al.camberFront + "°", al.camberRear + "°", "") +
+    `<div class="sublabel">TOE &nbsp;·&nbsp; + is out, − is in</div>` +
+    frPair((al.toeFront > 0 ? "+" : "") + al.toeFront.toFixed(2) + "°", al.toeRear.toFixed(2) + "°", "") +
+    `<div class="sublabel">CASTER &nbsp;·&nbsp; front only</div>
+     <div class="solo"><span class="val">${al.caster}</span><span class="u">degrees · band ${al.casterBand}</span></div>`,
+    `${al.toeNote} Camber is a trade — corner grip for straight-line grip — so check tire temperatures <b>as you leave</b> a corner, not mid-corner, or you'll set it too negative. If the front needs more than −2.0°, add caster instead.`,
+    "forza.guide · ForzaTune · ForzaFire");
 
-  // ARB
-  html += card("Anti-roll bars" + (ar.isRaw ? " (raw 0–65)" : ""),
-    fr(ar.front, ar.rear, "") +
-    `<div class="field-hint" style="margin-top:8px">Front band: <b style="color:var(--text)">${ar.frontBand[0]}–${ar.frontBand[1]}</b> · Rear band: <b style="color:var(--text)">${ar.rearBand[0]}–${ar.rearBand[1]}</b></div>`,
-    `${ar.directionNote} ${ar.engineNote} ${ar.isRaw ? "No slider range entered — values are on a normalized 0–65 scale, rescale to your car's actual ARB min/max." : ""} Road/touge setup wants a soft front and a noticeably stiffer rear — that's the opposite of locking both ends near max.`
-  );
+  h += card("03", "Springs &amp; ride height",
+    (sp.hasRange
+      ? frPair(sp.front + sp.unit.trim(), sp.rear + sp.unit.trim(), "") +
+        `<div class="band"><b>Slider position:</b> ${sp.fPct}% front · ${sp.rPct}% rear</div>`
+      : frPair(sp.fPct + "%", sp.rPct + "%", "") +
+        `<div class="band">Position along the slider. Enter your car's min and max in the form for absolute rates.</div>`) +
+    `<div class="band"><b>Corner weights:</b> ${sp.cwFront} lb front · ${sp.cwRear} lb rear</div>
+     <div class="sublabel">RIDE HEIGHT</div>
+     <div class="band" style="margin-top:0">${RIDE_HEIGHT[c.discipline]}</div>`,
+    `${sp.note} The ratio matters far more than the absolute numbers — FH6's spring floor sits above what real cars run, so chasing realistic rates is pointless. The heavier end gets the stiffer spring; that's the whole rule. Whichever end is <i>relatively</i> stiffer loses grip first.`,
+    "FH6 reference tables · ForzaTune · forza.guide");
 
-  // Damping
-  html += card("Damping",
-    rowLabel("Rebound") + fr(dm.reboundFront, dm.reboundRear, "") +
-    rowLabel("Bump") + fr(dm.bumpFront, dm.bumpRear, ""),
-    `Rebound target band: ${dm.reboundBand[0]}–${dm.reboundBand[1]} (60–70% of max slider). Bump = 35–40% of Rebound. Rear nudged dynamically based on axle weight distribution to prevent bounce.`
-  );
+  const arbBody = frPair(ar.front, ar.rear, "") +
+    `<div class="band"><b>Scale:</b> ${ar.scale}${ar.maxFirst ? " · or start both near max and soften down to the balance window" : ""}</div>`;
+  h += card("04", "Anti-roll bars", arbBody,
+    ar.offRoad
+      ? `Off-road is the exception to everything else on this page. Soft bars let the left and right suspension work independently so each wheel can follow the ruts. A stiff bar ties them together and the car skips. Balance the car with the diff and dampers out here, not the bars.`
+      : `Stiffer bar on an axle means <b>that end loses grip first</b> — it overloads the outside tire. So a stiffer front gives understeer, a stiffer rear gives oversteer. These are the most predictable sliders in the menu, and the only ones whose changes don't cascade into everything else. Fix the end with the problem: soften the weak end rather than stiffening the strong one.${c.drivetrain === "FWD" ? " Rear is capped at 30 — FWD chassis lift the inside rear in fast corners and a stiff rear bar turns that into a tripod." : ""}`,
+    "FH6 reference tables · forza.guide · ForzaFire");
 
-  // Brakes
-  html += card("Brakes",
-    fr(br.front + "%", br.rear + "%", "") +
-    `<div class="field-hint" style="margin-top:6px">Pressure: <b style="color:var(--text)">${br.pressure}%</b> starting point (target band 110–130%)</div>`,
-    `Base bias for ${drivetrain} / ${brakingStyle.toLowerCase()}, plus an engine-position adjustment. Slide the brake balance toward "Front" for more front-end stopping bias. Lock up too easily → reduce pressure toward 110%; not enough stopping power → increase toward 130%.`
-    + (br.callout ? `<div class="callout">${br.callout}</div>` : "")
-  );
+  h += card("05", "Damping",
+    `<div class="sublabel">REBOUND</div>` + frPair(dm.rebFront, dm.rebRear, "") +
+    `<div class="sublabel">BUMP</div>` + frPair(dm.bumpFront, dm.bumpRear, "") +
+    `<div class="band"><b>Bump is ${dm.ratio}% of rebound.</b> Guides put the useful band at 40–67%; rebound always sits higher.</div>`,
+    `Springs set how far the suspension moves, dampers set how fast. Tune these <b>after</b> springs and bars — if the springs are wrong, no damper value will save the car and you'll chase the same problem forever. The rear offsets from the front by the size of your spring split (${sp.splitPct}% here), with the ${sp.frontStiffer ? "stiffer front putting the rear dampers slightly below" : "stiffer rear putting the rear dampers slightly above"} the front.${d.road ? "" : " Rebound is bumped +1.0 across the board for terrain recovery."}`,
+    "FH6 reference tables · ForzaFire · forza.guide");
 
-  // Differential
-  let diffBody, diffWhy;
+  h += card("06", "Brakes",
+    frPair(br.front + "%", br.rear + "%", "", "Front bias", "Rear") +
+    `<div class="sublabel">PRESSURE</div>
+     <div class="solo"><span class="val">${br.pressure}</span><span class="u">% · start here, then use the trigger test</span></div>`,
+    `${br.note} <b>The slider is fixed in FH6</b> — in FH5 and earlier it was reversed, so old advice about which way to push it is now wrong. For pressure, the test everyone agrees on: you want lockup to happen in the <b>last 10–15% of the trigger pull</b>. Locking early with light input means drop it 5–10%; having to mash the trigger means raise it. Guides disagree on the starting number by a wide margin (100% to 145%), so trust the trigger test over any of them.`,
+    "ForzaTune · forza.guide · grindout");
+
+  let diffBody;
   if (df.type === "AWD"){
-    diffBody = `<div class="fr-row">
-        <div class="fr-chip front"><div class="lbl">Front accel</div><div class="val">${df.frontAccel}<span class="unit">%</span></div></div>
-        <div class="fr-chip rear"><div class="lbl">Rear accel</div><div class="val">${df.rearAccel}<span class="unit">%</span></div></div>
-      </div>
-      <div class="fr-row">
-        <div class="fr-chip front"><div class="lbl">Front decel</div><div class="val">${df.frontDecel}<span class="unit">%</span></div></div>
-        <div class="fr-chip rear"><div class="lbl">Rear decel</div><div class="val">${df.rearDecel}<span class="unit">%</span></div></div>
-      </div>
-      <div class="field-hint" style="margin-top:6px">Center balance: <b style="color:var(--text)">${df.centerRear}% rear</b></div>`;
-    diffWhy = "Rear Accel locked at 100% with a strong rear Center Bias — this is what gives the rear-biased power-down needed out of tight 90° corners. Front Accel stays modest so the front end doesn't fight your steering.";
-  } else if (df.type === "RWD"){
-    diffBody = fr(df.accel + "%", df.decel + "%", "");
-    diffWhy = df.trail
-      ? "Trail-braking range is lower (40–50% accel) so the car rotates more freely on entry."
-      : "Stability-first range (55–65% accel) for stronger, more predictable power-down.";
+    diffBody = `<div class="sublabel">FRONT DIFF</div>` + frPair(df.frontAccel + "%", df.frontDecel + "%", "", "Accel", "Decel") +
+               `<div class="sublabel">REAR DIFF</div>` + frPair(df.rearAccel + "%", df.rearDecel + "%", "", "Accel", "Decel") +
+               `<div class="sublabel">CENTRE</div>
+                <div class="solo"><span class="val">${df.center}</span><span class="u">% rear bias · never below 50</span></div>`;
+  } else if (df.type === "FWD"){
+    diffBody = frPair(df.frontAccel + "%", df.frontDecel + "%", "", "Front accel", "Front decel");
   } else {
-    diffBody = fr(df.accel + "%", df.decel + "%", "");
-    diffWhy = "FWD road/circuit baseline — kept high on accel lock to fight torque steer and pull the car straight.";
+    diffBody = frPair(df.rearAccel + "%", df.rearDecel + "%", "", "Rear accel", "Rear decel");
   }
-  html += card("Differential" + (df.type !== "AWD" ? ` (${df.type})` : ""), diffBody, diffWhy);
+  h += card("07", `Differential (${df.type})`, diffBody,
+    `${df.note} Acceleration only moves in 2% steps, so keep it on even numbers. 0% is fully open — both wheels free, which is great at constant speed and useless the moment you apply power, because everything leaks out of the unloaded inside wheel. 100% is fully locked, maximum drive but the car physically fights the turn.`,
+    "forza.guide · grindout · ForzaTune");
 
-  // Aero
-  html += card("Aero",
-    ae.na ? `<p class="na-note">N/A — aero isn't typically unlocked at this class. Focus PI elsewhere.</p>`
-      : `<div class="single-val"><span class="val">${ae.target.toFixed(2)}</span><span class="unit">Aero Balance target (band ${ae.band[0]}–${ae.band[1]})</span></div>`,
-    ae.na ? "" : "Set both wings to max, check the Aero Balance stat, then reduce the FRONT wing until it reads this target. Front-heavy cars bias low in the band; rear-heavy cars bias high."
-  );
+  h += card("08", "Aero",
+    ae.na
+      ? `<p class="na">${ae.dragNote ? "Strip the wings. Drag is all about minimising drag, and the downforce is dead weight in a straight line." : "Not worth the PI at this class — you won't reach the speeds where downforce pays for itself."}</p>`
+      : `<div class="solo"><span class="val">${ae.target.toFixed(2)}</span><span class="u">Aero Balance target · band ${ae.band}</span></div>
+         <div class="band" style="margin-top:9px"><b>Overall level:</b> ${ae.level}</div>`,
+    ae.na ? "" :
+    `Set the balance first, then the overall level. FH6 shows an Aero Balance stat as you move the sliders — sources put the right number anywhere from 0.42 to 0.50, which is a real disagreement rather than a rounding error, so treat the band as the honest answer and settle it on track. Fine-tune by adding to the end with the problem rather than pulling from the other end. High-power RWD needs extra rear or it'll spin the wheels on exit even with the stat in range.`,
+    "grindout · ForzaTune · forza.guide");
 
-  // Gearing
-  html += card("Gearing",
-    `<div class="field-hint" style="margin-bottom:6px">Target top speed: <b style="color:var(--text)">${ge.target} mph</b> at redline in top gear</div>
-     <div class="ladder">${ge.ladder.map(r => `<span>${r}</span>`).join("")}</div>`,
-    "Relative ratio ladder, 1st → top, on a smooth curve. Fine-tune 1st gear at the strip for launch."
-    + (ge.powerbandNote ? `<div class="field-hint" style="margin-top:6px">${ge.powerbandNote}</div>` : "")
-  );
+  h += card("09", "Gearing",
+    `<div class="solo"><span class="val">${ge.fd}</span><span class="u">final drive · starting point</span></div>
+     <div class="sublabel">RATIO LADDER, 1ST → TOP</div>
+     <div class="ladder">${ge.ladder.map((r, i) => `<span><i>${i + 1}</i>${r}</span>`).join("")}</div>`,
+    `Tune the <b>final drive only</b> and leave individual ratios alone unless you're doing drag, drift, or running a build the stock spacing can't cope with. The real test is on track: the car should <b>just barely touch the limiter in top gear at the end of the longest straight</b>. Bouncing off it early means lengthen the gears; weak drive out of corners means shorten them. The ladder above is log-spaced — biggest jump 1st to 2nd, tightest at the top — because drag climbs with the square of speed.`,
+    "grindout community formula · forza.guide");
 
-  document.getElementById("cardsGrid").innerHTML = html;
+  el("cards").innerHTML = h;
 }
 
-document.getElementById("calcForm").addEventListener("submit", e => { e.preventDefault(); runCalculator(); });
-document.getElementById("calcForm").addEventListener("input", runCalculator);
-document.getElementById("calcForm").addEventListener("change", runCalculator);
+/* ---- Fix-it ---- */
+let activePhase = "all";
+function renderFix(){
+  el("phaseRow").innerHTML = PHASES.map(p =>
+    `<button class="phase-btn" data-phase="${p.id}" aria-pressed="${p.id === activePhase}">${p.label}</button>`).join("");
 
-function renderMetaTable(){
-  const body = document.getElementById("metaTableBody");
-  body.innerHTML = CLASSES.map(c => {
-    const m = CLASS_META[c];
-    return `<tr><td><b style="color:${CLASS_COLORS[c]}">${c}</b></td><td>${{D:"≤500",C:"501–600",B:"601–700",A:"701–800",S1:"801–900",S2:"901–998",R:"999+"}[c]}</td><td>${m.tire}</td><td>${m.drivetrain}</td><td>${m.focus}</td></tr>`;
-  }).join("");
+  const list = SYMPTOMS.filter(s => activePhase === "all" || s.phase === activePhase);
+  const phaseLabel = id => ({ brake:"Braking", entry:"Turn-in", mid:"Mid-corner", exit:"Exit", other:"Ride" })[id];
+
+  el("symptoms").innerHTML = list.map(s => `
+    <div class="sym">
+      <h4>${s.title}</h4>
+      <div class="desc">${s.desc} <span class="phase-tag">${phaseLabel(s.phase)}</span></div>
+      <ol>${s.fixes.map(f => `<li>${f}</li>`).join("")}</ol>
+    </div>`).join("");
+
+  el("phaseRow").querySelectorAll(".phase-btn").forEach(b =>
+    b.addEventListener("click", () => { activePhase = b.dataset.phase; renderFix(); }));
 }
 
-function runMeta(){
-  const currentClass = document.getElementById("currentClass").value;
-  const targetClass = document.getElementById("targetClass").value;
-  const currentDrivetrain = document.getElementById("currentDrivetrain").value || null;
-  const steps = upgradePriority({ currentClass, targetClass, currentDrivetrain });
-
-  document.getElementById("stepList").innerHTML = steps.map((s, i) => `
-    <div class="step ${s.included ? "included" : "skip"} ${s.flagged ? "flagged" : ""}">
-      <div class="num">${String(i+1).padStart(2,"0")}</div>
-      <div class="body">
-        <h4><span class="pill">${s.included ? "Do this" : "Skip"}</span>${s.title}</h4>
+/* ---- Build order ---- */
+function renderBuild(){
+  const steps = buildOrder({
+    cur: el("curClass").value, tgt: el("tgtClass").value,
+    drivetrain: el("bDrivetrain").value, discipline: el("bDiscipline").value,
+  });
+  el("buildSteps").innerHTML = steps.map((s, i) => `
+    <div class="step ${s.inc ? "" : "skip"}">
+      <div class="n">${String(i + 1).padStart(2, "0")}</div>
+      <div>
+        <h4>${s.title}
+          <span class="pill ${s.inc ? (s.key ? "key" : "do") : "skip"}">${s.inc ? (s.key ? "high value" : "do it") : "skip"}</span>
+        </h4>
         <p>${s.detail}</p>
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
 
-document.getElementById("metaForm").addEventListener("submit", e => { e.preventDefault(); runMeta(); });
-document.getElementById("metaForm").addEventListener("change", runMeta);
+/* ---- Notes ---- */
+el("notes").innerHTML = `
+<h3>What this tool assumes about FH6</h3>
+<p>Forza Horizon 6 shipped on 19 May 2026 on Playground's ForzaTech engine, with a reworked tire physics model and multi-point tire-to-road contact. Several things that were true in FH5 are no longer true, and a calculator carrying FH5 assumptions will hand you a worse car than tuning by feel.</p>
 
-// ---- Init ----
-renderMetaTable();
-runCalculator();
-runMeta();
+<h3>The four changes that matter most</h3>
+<ul>
+<li><b>Mechanical Balance.</b> The tuning screen now shows a live front-versus-rear grip number. Community consensus puts the target at 0.55–0.65 with 0.60 as the sweet spot; one widely-used guide widens the floor to 0.52. It moves mainly with the anti-roll bars and secondarily with spring balance. This is the single biggest change to how tuning works — you now converge on a readout rather than calculating a final answer.</li>
+<li><b>The brake balance slider is fixed.</b> FH5 and earlier had a long-standing bug where the slider ran backwards. FH6 corrected it, which means a lot of inherited advice about which direction to push it is now wrong.</li>
+<li><b>Tire pressure is a responsiveness dial.</b> It doesn't drive temperature the way real physics would. Grip ceiling comes from compound and width. The old "get it to 32–34 psi hot" rule is gone; FH6 wants roughly 28–32 hot on tarmac and lower off-road.</li>
+<li><b>Front tire width and brakes are now worth PI.</b> Width gives granular grip adjustment, and stock brakes lock up on quick downshifts — which Japan's mountain passes punish hard.</li>
+</ul>
+
+<h3>What changed in this rewrite</h3>
+<table>
+<tr><th>Setting</th><th>Was</th><th>Now</th><th>Why</th></tr>
+<tr><td><b>Springs</b></td><td>Fixed 42% front / 58% rear regardless of the car</td><td>Ratio follows weight distribution; heavier axle gets the stiffer spring</td><td>Every FH6 source agrees the heavier end takes the stiffer spring. The old hard-coded soft-front/stiff-rear actively fought the car on any front-heavy chassis, and current testing says it makes turn-in inconsistent under trail-braking.</td></tr>
+<tr><td><b>Anti-roll bars</b></td><td>Front ~6.5, rear ~45 on a 65 scale</td><td>Discipline and drivetrain tables, then converge on Mechanical Balance</td><td>A front bar that soft with a rear that stiff is a snap-oversteer recipe on anything with power. More importantly, FH6 gives you a readout, so a fixed calculated number was always going to be worse than converging.</td></tr>
+<tr><td><b>Tire pressure</b></td><td>Cold pressures plus a 16 psi "meta" toggle</td><td>Hot pressure targets by discipline and compound</td><td>The very-low-pressure meta was an FH5-era exploit. FH6's tire model doesn't reward it, and no current guide recommends anything near 16 psi for road use.</td></tr>
+<tr><td><b>Toe</b></td><td>Defaulted to +0.15° front out, −0.1° rear in</td><td>Zero, with named exceptions</td><td>Toe scrubs the tires and costs top speed. Guides are unanimous that it should be a last resort after the bars, springs and diff, not a default.</td></tr>
+<tr><td><b>Brake pressure</b></td><td>120%, band 110–130%</td><td>100–115% start, with the trigger test as the real answer</td><td>Sources split badly here — some say 100%, one table says 125–145% by car type. They all agree on where lockup should land in the trigger pull, so that's what the card tells you to use.</td></tr>
+<tr><td><b>Differential</b></td><td>FWD 95/5; AWD front 40–50% accel, centre 75–80%</td><td>FWD 82–88/0–6; AWD front 80–95, rear 50–70, centre 70–80%</td><td>The old AWD front accel was far too low — the front diff should be treated like a FWD car's, not throttled back.</td></tr>
+<tr><td><b>Ride height</b></td><td>"Run max, front higher than rear"</td><td>Minimum for road and touge; near max off-road</td><td>Backwards for road racing. Low ride height is the point on tarmac; you only raise it when you start bottoming out.</td></tr>
+<tr><td><b>Gearing</b></td><td>Top ratio = 308 ÷ target speed</td><td>Final drive from power, plus the rev-limiter method</td><td>The old formula had no grounding. The new one uses the community final-drive formula as a starting point and then tells you to do what actually works: check where you hit the limiter on the longest straight.</td></tr>
+<tr><td><b>Damping</b></td><td>Scale assumed max 14</td><td>Scale 1–20, discipline baselines, rear offset from spring split</td><td>Wrong scale produced values that were roughly right by accident. The rear offset now tracks the actual spring split rather than static corner weight.</td></tr>
+<tr><td><b>Discipline</b></td><td>Not an input</td><td>Six disciplines drive nearly every output</td><td>Road and dirt want genuinely opposite setups — stiff versus soft, low versus high, max bars versus minimum bars. Without this input the tool could only ever be right about one of them.</td></tr>
+</table>
+
+<h3>Where the sources disagree</h3>
+<p>Three things are genuinely contested, and the tool shows the band rather than picking a winner:</p>
+<ul>
+<li><b>Caster.</b> Most FH6 guides say 6.5–7.0°. ForzaTune says later Horizon titles are more caster-sensitive and recommends 5.5°, warning that above 6.0° the car gets snappy on turn-in. The tool starts at 6.5° and drops half a degree for light cars.</li>
+<li><b>Bump-to-rebound ratio.</b> Published figures run from 40% to 67%. The discipline baselines land around 60–67%; the band is on the card.</li>
+<li><b>Aero Balance target.</b> Roughly 0.42–0.45 from one camp, about 0.50 from another. Neither is obviously wrong, so the tool centres near 0.46 and shows the spread.</li>
+</ul>
+<p>There's also an open argument about whether FH6 shifted the PI class thresholds down by 100. Most car lists still use the familiar ranges (A at 701–800, S1 at 801–900), at least one guide claims A now caps at 700. The tool doesn't rely on exact thresholds for anything — open the upgrade screen and let the PI bar tell you where the line is.</p>
+
+<h3>Sources</h3>
+<ul>
+<li>ForzaTune — <i>The Fully Updated Forza Tuning Guide</i>, updated July 2026. From the developer of the ForzaTune apps; the most careful source on tire pressure method, brake slider behaviour and differential ranges.</li>
+<li>forza.guide — FH6 tuning guide and cheat sheet. The most complete symptom matrix and the clearest ARB convergence workflow.</li>
+<li>ForzaFire — <i>FH6 Platform &amp; Handling Tuning Guide</i>, May 2026. Upgrade-tier detail and damping offset tables.</li>
+<li>Grindout — <i>FH6 Tuning Guide</i>, July 2026. The Mechanical Balance target window and the final-drive formula.</li>
+<li>Community FH6 reference tables (Flunkus/forza-horizon-6-ai-tuner). Discipline-specific ARB, damping and pressure starting values, including touge.</li>
+<li>Game8, Apex Speed Craft, mmoexp — corroboration on Mechanical Balance targets and the 1/65 ARB split.</li>
+</ul>
+
+<h3>How to actually use this</h3>
+<p>Fill in the car, take the setup sheet as a starting point, then drive. Build the whole baseline before you start balancing — there's nothing meaningful to test until the car is assembled. Test where you'll actually race, ideally in Rivals so the weather and surface are locked and you're reading the car rather than the conditions. Find the single worst thing the car does, look it up on the Fix it tab, change one slider, drive again.</p>
+<p>A tune is never finished. Your driving changes, the route changes, and the same car set up for a Tokyo street circuit will be wrong on a Fuji mountain pass.</p>
+`;
+
+/* =========================================================================
+   WIRING
+   ========================================================================= */
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", "false"));
+    document.querySelectorAll(".panel-tab").forEach(p => p.classList.remove("active"));
+    btn.setAttribute("aria-selected", "true");
+    el("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+
+el("wUnit").querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const u = btn.dataset.u;
+    if (u === weightUnit) return;
+    const input = el("weight");
+    const cur = Number(input.value) || 0;
+    input.value = u === "kg" ? Math.round(cur / LB_PER_KG) : Math.round(cur * LB_PER_KG);
+    weightUnit = u;
+    el("wUnit").querySelectorAll("button").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.u === u)));
+    renderTune();
+  });
+});
+
+// Engine position implies a default weight split until the user overrides it.
+let frontPctTouched = false;
+el("frontPct").addEventListener("input", () => { frontPctTouched = true; });
+el("enginePos").addEventListener("change", () => {
+  if (frontPctTouched) return;
+  el("frontPct").value = { Front:53, Mid:44, Rear:39 }[el("enginePos").value];
+});
+
+["input", "change"].forEach(evt => {
+  el("carForm").addEventListener(evt, renderTune);
+  el("buildForm").addEventListener(evt, renderBuild);
+});
+el("carForm").addEventListener("submit", e => e.preventDefault());
+el("buildForm").addEventListener("submit", e => e.preventDefault());
+
+renderTune();
+renderFix();
+renderBuild();
 </script>
 </body>
 </html>
